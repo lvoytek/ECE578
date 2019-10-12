@@ -1,3 +1,5 @@
+#include "DistributedCoordinationFunction.h"
+
 int * generatePoissonDelayTimes(int lambda, int time)
 {
 	int * delayTimes = (int *) calloc(sizeof(int), lambda*time);

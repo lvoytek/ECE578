@@ -20,7 +20,7 @@ typedef struct node_t
 typedef struct nodeListItem_t
 {
 	node * nodeValue;
-	nodeListItem * next;
+	struct nodeListItem_t * next;
 
 } nodeListItem;
 
