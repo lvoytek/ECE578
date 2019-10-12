@@ -1,6 +1,9 @@
 #ifndef DISTRIBUTEDCOORDINATIONFUNCTION_H
 #define DISTRIBUTEDCOORDINATIONFUNCTION_H
 
+#include <stdio.h> //printf
+#include <stdlib.h> //calloc, rand
+#include <math.h> //log
 /*
 * Represents a node attempting to send and receive packets
 * at set times
@@ -37,8 +40,10 @@ typedef struct collisionDomain_t
 *
 * The equation used is:
 * X = -1/λ * ln(1-U) where U is a set of 1's and 0's
+*
+* lambda is in frames/second and time is in seconds
 */
-int * generatePoissonDelayTimes();
+int * generatePoissonDelayTimes(int lambda, int time);
 
 
 #endif
