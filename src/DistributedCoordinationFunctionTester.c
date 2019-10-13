@@ -2,12 +2,12 @@
 
 void testPoisson()
 {
-	float * items = generatePoissonDelayTimes(50, 10);
+	int * items = generatePoissonDelayTimes(50, 10, 100000);
 
-	printf("%f", items[0]);
+	printf("%d", items[0]);
 	
 	for(int i = 1; i < 500; i++) {
-		printf(", %f", items[i]);
+		printf(", %d", items[i]);
 	}
 }
 

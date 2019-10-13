@@ -1,6 +1,6 @@
 #include "DistributedCoordinationFunction.h"
 
-float * generatePoissonDelayTimes(int lambda, int time)
+int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond)
 {
 	float * delayTimes = (float *) calloc(sizeof(float), lambda*time);
 
@@ -8,5 +8,13 @@ float * generatePoissonDelayTimes(int lambda, int time)
 		delayTimes[i] = -1.0 / lambda * log(1 - (rand()%100 / 100.0));
 	}
 
-	return delayTimes;
+	int * delaySlots = (int *) calloc(sizeof(int), lambda*time);
+
+	for(int i = 0; i < lambda*time; i++) {
+		delaySlots[i] = delayTimes[i] * slotsPerSecond / time;
+	}
+
+	free(delayTimes);
+
+	return delaySlots;
 }
