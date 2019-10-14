@@ -21,5 +21,5 @@ int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond)
 
 float slots_from_bytes(int bytes)
 {
-	return ((bytes * 8 ) / (TransmissionRate_Mbps*oneMillion))/(slot_duration_us*oneMillion);
+	return (((float)bytes * 8 ) / ((float)TransmissionRate_Mbps*(float)slot_duration_us));
 }

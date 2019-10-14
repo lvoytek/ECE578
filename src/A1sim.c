@@ -2,8 +2,8 @@
 
 // Concurrent Communications using CSMA/CA
 void A1simulation();
-void A1_sim_run(int *Abackoff, int *Cbackoff);
-void startTransmission();
+void A1_sim_run(int *A.sendDelayTimes, int *Cbackoff);
+void startTransmi.sendDelayTimes;
 void stopTransmission();
 
 int currentlyOccupied = FALSE;
@@ -16,58 +16,144 @@ int main()
 
 void A1simulation() 
 {
-	int *AbackoffTimes;
-	int *CbackoffTimes;
+	node A;
+	node C;
 
 	int lambdaA[] = {50, 100, 200, 300, 500, 100, 200, 400, 600, 1000};
 	int lambdaC[] = {50, 100, 200, 300, 500, 50, 100, 200, 300, 500};
 
+
 	for (int i = 0; i < 10; i++) {
-		AbackoffTimes = generatePoissonDelayTimes(lambdaA[i], simulation_time_s, 100000);
-		CbackoffTimes = generatePoissonDelayTimes(lambdaC[i], simulation_time_s, 100000);
-		A1_sim_run(AbackoffTimes, CbackoffTimes);
-		free(AbackoffTimes);
-		free(CbackoffTimes);
+		A.sendDelayTimes = generatePoissonDelayTimes(lambdaA[i], simulation_time_s, 100000);
+		A.k = 0;
+		A.totalCollisions = 0;
+		A.totalSuccesses = 0;
+		A.backlogFrames = 0;
+		A.countdown = -1;
+
+		C.sendDelayTimes = generatePoissonDelayTimes(lambdaC[i], simulation_time_s, 100000);
+		C.k = 0;
+		C.totalCollisions = 0;
+		C.totalSuccesses = 0;
+		C.backlogFrames = 0;
+		C.countdown = -1;
+
+		A1_sim_run(&A, &C);
+
+		free(A.sendDelayTimes);
+		free(C.sendDelayTimes);
 	}
 }
 
-void A1_sim_run(int *Abackoff, int *Cbackoff)
+void A1_sim_run(node * A, node * B)
 {
 	slot curr_slot = {FALSE};
 	slot next_slot = {FALSE};
 
-	int *currAback = Abackoff;
-	int *currCback = Cbackoff;
+	int *currAback = A->sendDelayTimes;
+	int *currCback = C->sendDelayTimes;
 
-	//NAV = Tansmission time + SIFS + ACK
-	int NAV = slots_from_bytes(data_frame_size_bytes) + \
-		SIFS_duration_us/slot_duration_us + \
-		slots_from_bytes(ACK_RTS_CTS_size_bytes);
+	int i = 0;
+	while(i < total_slots) {
 
+		//First collision prior to backoffs
+		if ((*currAback == 0) && (*currCback == 0)) {
+			i += 1 + NAV;
 
-	for(int i = 0; i < total_slots; i++) {
+			int windowMax = pow(2, A.k) * CWo;
+			A.countdown = rand()%(windowMax);
 
-		if (curr_slot.occupied == FALSE) {
-			if (*currAback == 0)
-				startTransmission("A");
-			if (*currCback == 0)
-				startTransmission("C");
+			if(windowMax * 2 < CWmax)
+				A.k++;
+
+			windowMax = pow(2, C.k) * CWo;
+			C.countdown = rand()%(windowMax);
+
+			if(windowMax * 2 < CWmax)
+				C.k++;
+
+			i += DIFS_slots;
+
+			A.collisions++;
+			C.collisions++;
+
+			currAback++;
+			currCback++;
+
+			A.backlogFrames++;
+			C.backlogFrames++;
 		}
 
-		// if busy, monitors until idle. 
-		//		If idle, Tx decrements with every idle slot.
-		// 		if busy, Tx freezes its backoff counter.
-		//		when counter reaches zero, Tx transmits its frame.
+		//Subsequent collisions
+		if(A.countdown == 0 && C.countdown == 0)
+		{
 
 
-		// if frame is successfully received by Rx, Rx replies with 
-		// 		ACK after SIFS time. 
+		}
+		else
+		{
+			//Backoff countdown decrement
+			if(A.countdown > 0) {
+				A.countdown --;
+			}
 
+			//Transmit after backoff
+			else if(A.countdown == 0) {
+				startTransmission();
+				i += NAV;
+				i += DIFS_slots;
 
-		// if collision occurs, stations that collided doubles their 
-		// 		contention window and repeats the backoff process
-		//		after k collisions, backoff value is selected from
-		// 		[0, 2^k*CW_0 - 1]. CW can not exceed CWmax
+				A.totalSuccesses++;
+				currAback++;
+
+				A.countdown = -1;
+				A.backlogFrames--;
+			}
+
+			//Transmit normally
+			else if (*currAback == 0) {
+				startTransmission();
+				i += NAV;
+				i += DIFS_slots;
+
+				A.totalSuccesses++;
+				currAback++;
+
+			}
+
+			//Backoff countdown decrement
+			if(C.countdown > 0) {
+				C.countdown --;
+			}
+
+			//Transmit after backoff
+			else if(C.countdown == 0) {
+				startTransmission();
+				i += NAV;
+				i += DIFS_slots;
+
+				C.totalSuccesses++;
+				currAback++;
+
+				C.countdown = -1;
+				C.backlogFrames--;
+			}
+
+			//Transmit normally
+			else if (*currCback == 0){
+				startTransmission();
+				i += NAV;
+				i += DIFS_slots;
+
+				C.totalSuccesses++;
+				currCback++;
+			}
+		}
+
+		(*currAback)--;
+		(*currCback)--;
+
+		i++;
 	}
 }
 

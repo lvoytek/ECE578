@@ -18,9 +18,21 @@
 #define TransmissionRate_Mbps 12
 #define simulation_time_s 10
 #define total_slots (simulation_time_s * 10000000) / slot_duration_us
+#define DIFS_slots DIFS_duration_us/slot_duration_us
 
 #define FALSE 0
 #define TRUE 1
+
+/*
+* Generates the amount of slots it takes to transmission x bytes.
+*/
+float slots_from_bytes(int bytes);
+
+// NAV = data frame + SIFS + ACK
+#define NAV (int)(slots_from_bytes(data_frame_size_bytes) + \
+		(float)SIFS_duration_us/(float)slot_duration_us + \
+		slots_from_bytes(ACK_RTS_CTS_size_bytes))
+
 
 typedef struct slot_t
 {
@@ -37,6 +49,10 @@ typedef struct node_t
 {
 	int * sendDelayTimes;
 	int countdown;
+	int backlogFrames;
+	int totalCollisions;
+	int totalSuccesses;
+	int k;
 } node;
 
 /*
@@ -69,12 +85,5 @@ typedef struct collisionDomain_t
 * lambda is in frames/second and time is in seconds
 */
 int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond);
-
-
-/*
-* Generates the amount of slots it takes to transmission x bytes.
-*/
-float slots_from_bytes(int bytes);
-
 
 #endif
