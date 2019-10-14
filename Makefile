@@ -5,6 +5,7 @@ LIBS ?= -L./lib
 all: A1 A2
 
 A1: build/A1sim
+	./build/A1sim
 A2: build/A2sim
 
 lib/libDCF.so: src/libDCF.c
