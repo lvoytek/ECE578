@@ -3,6 +3,7 @@
 
 #include <stdio.h> //printf
 #include <stdlib.h> //calloc, rand
+#include <stdint.h> //uint8_t
 #include <math.h> //log
 
 #define oneMillion 1000000
