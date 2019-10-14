@@ -126,6 +126,11 @@ void A1_sim_run(node * A, node * C)
 
 			}
 
+			//Wait for next arrival
+			else {	
+				(*currAback)--;
+			}
+
 			//Backoff countdown decrement
 			if(C->countdown > 0) {
 				C->countdown --;
@@ -157,10 +162,12 @@ void A1_sim_run(node * A, node * C)
 				C->totalSuccesses++;
 				currCback++;
 			}
-		}
 
-		(*currAback)--;
-		(*currCback)--;
+			//Wait for next arrival
+			else {
+				(*currCback)--;
+			}
+		}
 
 		i++;
 	}
