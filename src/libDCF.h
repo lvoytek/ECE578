@@ -4,6 +4,17 @@
 #include <stdio.h> //printf
 #include <stdlib.h> //calloc, rand
 #include <math.h> //log
+
+#define data_frame_size_bytes 1500
+#define slot_duration_us 10
+#define SIF_duration_us 10
+#define CWmax 1024
+#define CWo 4
+#define ACK_RTS_CTS_size_bytes 30
+#define DIFS_duration_us 40
+#define TransmissionRate_Mb 12
+#define simulation_time 10
+
 /*
 * Represents a node attempting to send and receive packets
 * at set times

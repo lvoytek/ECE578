@@ -2,7 +2,7 @@
 #define DISTRIBUTEDCOORDINATIONFUNCTIONTESTER_H
 
 #include <stdio.h>
-#include "DistributedCoordinationFunction.h"
+#include "libDCF.h"
 
 void testPoisson();
 

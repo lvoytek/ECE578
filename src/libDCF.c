@@ -1,4 +1,4 @@
-#include "DistributedCoordinationFunction.h"
+#include "libDCF.h"
 
 int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond)
 {

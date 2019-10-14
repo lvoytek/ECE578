@@ -1,2 +1,2 @@
-build/DCFTester:src/DistributedCoordinationFunction.c src/DistributedCoordinationFunctionTester.c
-	gcc src/DistributedCoordinationFunction.c src/DistributedCoordinationFunctionTester.c -o build/DCFTester -lm
+build/DCFTester:src/libDCF.c src/test_libDCF.c
+	$(CC) $^ -o $@ -lm

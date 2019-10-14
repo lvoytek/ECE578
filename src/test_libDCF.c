@@ -1,4 +1,4 @@
-#include "DistributedCoordinationFunctionTester.h"
+#include "test_libDCF.h"
 
 void testPoisson()
 {
