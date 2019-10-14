@@ -2,8 +2,8 @@
 
 // Concurrent Communications using CSMA/CA
 void A1simulation();
-void A1_sim_run(int *A.sendDelayTimes, int *Cbackoff);
-void startTransmi.sendDelayTimes;
+void A1_sim_run(node *A, node *C);
+void startTransmission();
 void stopTransmission();
 
 int currentlyOccupied = FALSE;
@@ -45,7 +45,7 @@ void A1simulation()
 	}
 }
 
-void A1_sim_run(node * A, node * B)
+void A1_sim_run(node * A, node * C)
 {
 	slot curr_slot = {FALSE};
 	slot next_slot = {FALSE};
@@ -60,32 +60,32 @@ void A1_sim_run(node * A, node * B)
 		if ((*currAback == 0) && (*currCback == 0)) {
 			i += 1 + NAV;
 
-			int windowMax = pow(2, A.k) * CWo;
-			A.countdown = rand()%(windowMax);
+			int windowMax = pow(2, A->k) * CWo;
+			A->countdown = rand()%(windowMax);
 
 			if(windowMax * 2 < CWmax)
-				A.k++;
+				A->k++;
 
-			windowMax = pow(2, C.k) * CWo;
-			C.countdown = rand()%(windowMax);
+			windowMax = pow(2, C->k) * CWo;
+			C->countdown = rand()%(windowMax);
 
 			if(windowMax * 2 < CWmax)
-				C.k++;
+				C->k++;
 
 			i += DIFS_slots;
 
-			A.collisions++;
-			C.collisions++;
+			A->totalCollisions++;
+			C->totalCollisions++;
 
 			currAback++;
 			currCback++;
 
-			A.backlogFrames++;
-			C.backlogFrames++;
+			A->backlogFrames++;
+			C->backlogFrames++;
 		}
 
 		//Subsequent collisions
-		if(A.countdown == 0 && C.countdown == 0)
+		if(A->countdown == 0 && C->countdown == 0)
 		{
 
 
@@ -93,21 +93,21 @@ void A1_sim_run(node * A, node * B)
 		else
 		{
 			//Backoff countdown decrement
-			if(A.countdown > 0) {
-				A.countdown --;
+			if(A->countdown > 0) {
+				A->countdown --;
 			}
 
 			//Transmit after backoff
-			else if(A.countdown == 0) {
+			else if(A->countdown == 0) {
 				startTransmission();
 				i += NAV;
 				i += DIFS_slots;
 
-				A.totalSuccesses++;
+				A->totalSuccesses++;
 				currAback++;
 
-				A.countdown = -1;
-				A.backlogFrames--;
+				A->countdown = -1;
+				A->backlogFrames--;
 			}
 
 			//Transmit normally
@@ -116,27 +116,27 @@ void A1_sim_run(node * A, node * B)
 				i += NAV;
 				i += DIFS_slots;
 
-				A.totalSuccesses++;
+				A->totalSuccesses++;
 				currAback++;
 
 			}
 
 			//Backoff countdown decrement
-			if(C.countdown > 0) {
-				C.countdown --;
+			if(C->countdown > 0) {
+				C->countdown --;
 			}
 
 			//Transmit after backoff
-			else if(C.countdown == 0) {
+			else if(C->countdown == 0) {
 				startTransmission();
 				i += NAV;
 				i += DIFS_slots;
 
-				C.totalSuccesses++;
+				C->totalSuccesses++;
 				currAback++;
 
-				C.countdown = -1;
-				C.backlogFrames--;
+				C->countdown = -1;
+				C->backlogFrames--;
 			}
 
 			//Transmit normally
@@ -145,7 +145,7 @@ void A1_sim_run(node * A, node * B)
 				i += NAV;
 				i += DIFS_slots;
 
-				C.totalSuccesses++;
+				C->totalSuccesses++;
 				currCback++;
 			}
 		}
