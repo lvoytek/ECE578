@@ -1,7 +1,10 @@
 #include "libDCF.h"
 
 // Concurrent Communications using CSMA/CA
-A1simulation();
+void A1simulation();
+void A1_sim_run(int *Abackoff, int *Cbackoff);
+void startTransmission();
+void stopTransmission();
 
 int currentlyOccupied = FALSE;
 
@@ -16,13 +19,13 @@ void A1simulation()
 	int *AbackoffTimes;
 	int *CbackoffTimes;
 
-	int lambdaA = {50, 100, 200, 300, 500, 100, 200, 400, 600, 1000};
-	int lambdaC = {50, 100, 200, 300, 500, 50, 100, 200, 300, 500};
+	int lambdaA[] = {50, 100, 200, 300, 500, 100, 200, 400, 600, 1000};
+	int lambdaC[] = {50, 100, 200, 300, 500, 50, 100, 200, 300, 500};
 
 	for (int i = 0; i < 10; i++) {
-		AbackoffTimes = generatePoissonDelayTimes(lambdaA[i], simulation_time_S, 100000);
-		CbackoffTimes = generatePoissonDelayTimes(lambdaC[i], simulation_time_S, 100000);
-		A1_sim_run(AbackoffTimes, BbackoffTimes);
+		AbackoffTimes = generatePoissonDelayTimes(lambdaA[i], simulation_time_s, 100000);
+		CbackoffTimes = generatePoissonDelayTimes(lambdaC[i], simulation_time_s, 100000);
+		A1_sim_run(AbackoffTimes, CbackoffTimes);
 		free(AbackoffTimes);
 		free(CbackoffTimes);
 	}
@@ -30,11 +33,11 @@ void A1simulation()
 
 void A1_sim_run(int *Abackoff, int *Cbackoff)
 {
-	slot_t curr_slot = {FALSE};
-	slot_t next_slot = {FALSE};
+	slot curr_slot = {FALSE};
+	slot next_slot = {FALSE};
 
-	int *currAback Abackoff;
-	int *currCback Cbackoff;
+	int *currAback = Abackoff;
+	int *currCback = Cbackoff;
 
 	//NAV = Tansmission time + SIFS + ACK
 	int NAV = slots_from_bytes(data_frame_size_bytes) + \
