@@ -1,6 +1,7 @@
 LIBS := -L./lib
 
 lib/libDCF.so: src/libDCF.c
+	 @mkdir -p lib
 	 $(CC) -shared $^ -o  $@ -lm
 
 build/DCFTester:src/test_libDCF.c
