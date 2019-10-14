@@ -36,10 +36,8 @@ void A1_sim_run(int *Abackoff, int *Cbackoff)
 	int *currAback Abackoff;
 	int *currCback Cbackoff;
 
-	//NAV = DIFS + backoff + Tansmission time + SIFS + ACK
-	int NAV_without_backoff = \
-		DIFS_duration_us/slot_duration_us + \
-		slots_from_bytes(data_frame_size_bytes) + \
+	//NAV = Tansmission time + SIFS + ACK
+	int NAV = slots_from_bytes(data_frame_size_bytes) + \
 		SIFS_duration_us/slot_duration_us + \
 		slots_from_bytes(ACK_RTS_CTS_size_bytes);
 
