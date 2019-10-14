@@ -1,38 +1,45 @@
 LIBS ?= -L./lib
+SRCDIR ?= src
+BUILDDIR ?= build
+LIBDIR ?= lib
 
-.phony: clean A1 all
+.phony: clean A1 A2 B1 B2 all
 
-all: A1 A2
+all: A1 A2 B1 B2
 
-A1: build/A1sim
-	./build/A1sim
-A2: build/A2sim
+A1: ${BUILDDIR}/A1sim
+	./${BUILDDIR}/A1sim
+A2: ${BUILDDIR}/A2sim
+	./${BUILDDIR}/A2sim
+B1: ${BUILDDIR}/B1sim
+	./${BUILDDIR}/B1sim
+B2: ${BUILDDIR}/B2sim
+	./${BUILDDIR}/B2sim
 
-lib/libDCF.so: src/libDCF.c
-	 @mkdir -p lib
+${LIBDIR}/libDCF.so: ${SRCDIR}/libDCF.c
+	 @mkdir -p ${LIBDIR}
 	 $(CC) -shared $^ -o  $@ -lm
 
-build/DCFTester:src/test_libDCF.c
+${BUILDDIR}/DCFTester:${SRCDIR}/test_libDCF.c
+	@mkdir -p ${BUILDDIR}
 	$(CC) $(LIBS) $^ -o $@ -lm -lDCF
 
-build/A1sim: src/A1sim.c lib/libDCF.so
+${BUILDDIR}/A1sim: ${SRCDIR}/A1sim.c ${LIBDIR}/libDCF.so
+	@mkdir -p ${BUILDDIR}
 	$(CC) $(LIBS) $^ -o $@ -lm -lDCF
 
-build/A2sim: src/A2sim.c lib/libDCF.so
+${BUILDDIR}/A2sim: ${SRCDIR}/A2sim.c ${LIBDIR}/libDCF.so
+	@mkdir -p ${BUILDDIR}
 	$(CC) $(LIBS) $^ -o $@ -lm -lDCF
 
-build/B1sim: src/B1sim.c lib/libDCF.so
+${BUILDDIR}/B1sim: ${SRCDIR}/B1sim.c ${LIBDIR}/libDCF.so
+	@mkdir -p ${BUILDDIR}
 	$(CC) $(LIBS) $^ -o $@ -lm -lDCF
 
-build/B2sim: src/B2sim.c lib/libDCF.so
+${BUILDDIR}/B2sim: ${SRCDIR}/B2sim.c ${LIBDIR}/libDCF.so
+	@mkdir -p ${BUILDDIR}
 	$(CC) $(LIBS) $^ -o $@ -lm -lDCF
-
-build/script_runner: build/A1sim build/A2sim build/B1sim build/B2sim lib/libDCF.so
-	$(CC) $^ -o $@ $(LIBS) -lm
-
-run_all_scripts: build/script_runner
-	./script_runner
 
 clean:
-	rm -rf build/*
-	rm -rf lib/*
+	rm -rf build
+	rm -rf lib
