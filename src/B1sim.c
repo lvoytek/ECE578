@@ -1,7 +1,7 @@
 #include "libDCF.h"
 
 // Hidden terminals using CSMA/CA
-B1simulation();
+void B1simulation();
 
 int main() 
 {

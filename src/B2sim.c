@@ -2,7 +2,7 @@
 
 // Hidden terminals using CSMA/CA with virtual carrier 
 // sensing enabled
-B2simulation();
+void B2simulation();
 
 int main()
 {

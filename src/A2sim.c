@@ -2,7 +2,7 @@
 
 // Concurrent Communications using CSMA/CA with virtual carrier 
 // sensing enabled
-A2simulation();
+void A2simulation();
 
 int main()
 {
