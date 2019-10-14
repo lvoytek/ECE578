@@ -13,7 +13,9 @@
 #define ACK_RTS_CTS_size_bytes 30
 #define DIFS_duration_us 40
 #define TransmissionRate_Mb 12
-#define simulation_time 10
+#define simulation_time_s 10
+#define total_slots (simulation_time_s * 10000000) / slot_duration_us
+
 
 /*
 * Represents a node attempting to send and receive packets
