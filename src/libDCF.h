@@ -16,6 +16,15 @@
 #define simulation_time_s 10
 #define total_slots (simulation_time_s * 10000000) / slot_duration_us
 
+#define FALSE 0
+#define TRUE 1
+
+typedef struct slot_t
+{
+	uint8_t occupied;
+	size_t * next;
+} slot;
+
 
 /*
 * Represents a node attempting to send and receive packets
