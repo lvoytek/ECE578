@@ -65,7 +65,7 @@ typedef struct collisionDomain_t
 *
 * lambda is in frames/second and time is in seconds
 */
-int * generatePoissonDelayTimes(int lambdaA, int lambdaC, int time, int slotsPerSecond);
+int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond);
 
 
 #endif
