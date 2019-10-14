@@ -1,4 +1,4 @@
-#include "libDCF.c"
+#include "libDCF.h"
 
 // Concurrent Communications using CSMA/CA
 A1simulation();
