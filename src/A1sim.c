@@ -43,6 +43,11 @@ void A1simulation()
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
 	}
+
+	printf("A successes: %d\n", A.totalSuccesses);
+	printf("A collisions: %d\n", A.totalCollisions);
+	printf("C successes: %d\n", C.totalSuccesses);
+	printf("C collisions: %d\n", C.totalCollisions);
 }
 
 void A1_sim_run(node * A, node * C)
@@ -57,7 +62,7 @@ void A1_sim_run(node * A, node * C)
 	while(i < total_slots) {
 
 		//First collision prior to backoffs
-		if ((*currAback == 0) && (*currCback == 0)) {
+		if (((*currAback == 0) && (*currCback == 0)) || (A->countdown == 0 && C->countdown == 0)) {
 			i += 1 + NAV;
 
 			int windowMax = pow(2, A->k) * CWo;
@@ -84,12 +89,6 @@ void A1_sim_run(node * A, node * C)
 			C->backlogFrames++;
 		}
 
-		//Subsequent collisions
-		if(A->countdown == 0 && C->countdown == 0)
-		{
-
-
-		}
 		else
 		{
 			//Backoff countdown decrement
@@ -108,6 +107,12 @@ void A1_sim_run(node * A, node * C)
 
 				A->countdown = -1;
 				A->backlogFrames--;
+
+				if(A->backlogFrames > 0)
+					A->countdown = DIFS_slots;
+				else
+					A->countdown = -1;
+					
 			}
 
 			//Transmit normally
@@ -119,6 +124,11 @@ void A1_sim_run(node * A, node * C)
 				A->totalSuccesses++;
 				currAback++;
 
+			}
+
+			//Wait for next arrival
+			else {	
+				(*currAback)--;
 			}
 
 			//Backoff countdown decrement
@@ -135,8 +145,12 @@ void A1_sim_run(node * A, node * C)
 				C->totalSuccesses++;
 				currAback++;
 
-				C->countdown = -1;
 				C->backlogFrames--;
+
+				if(C->backlogFrames > 0)
+					C->countdown = DIFS_slots;
+				else
+					C->countdown = -1;
 			}
 
 			//Transmit normally
@@ -148,10 +162,12 @@ void A1_sim_run(node * A, node * C)
 				C->totalSuccesses++;
 				currCback++;
 			}
-		}
 
-		(*currAback)--;
-		(*currCback)--;
+			//Wait for next arrival
+			else {
+				(*currCback)--;
+			}
+		}
 
 		i++;
 	}
