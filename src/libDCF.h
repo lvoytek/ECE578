@@ -9,7 +9,7 @@
 
 #define data_frame_size_bytes 1500
 #define slot_duration_us 10
-#define SIF_duration_us 10
+#define SIFS_duration_us 10
 #define CWmax 1024
 #define CWo 4
 #define ACK_RTS_CTS_size_bytes 30
@@ -68,6 +68,12 @@ typedef struct collisionDomain_t
 * lambda is in frames/second and time is in seconds
 */
 int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond);
+
+
+/*
+* Generates the amount of slots it takes to transmission x bytes.
+*/
+float slots_from_bytes(int bytes);
 
 
 #endif
