@@ -5,6 +5,8 @@
 #include <stdlib.h> //calloc, rand
 #include <math.h> //log
 
+#define oneMillion 1000000
+
 #define data_frame_size_bytes 1500
 #define slot_duration_us 10
 #define SIF_duration_us 10
