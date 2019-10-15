@@ -23,6 +23,11 @@
 #define FALSE 0
 #define TRUE 1
 
+#define YELLOW "\e[1;33m"
+#define NONE "\e[1;0m"
+#define BRIGHTMAGENTA "\e[1;35m"
+
+
 /*
 * Generates the amount of slots it takes to transmission x bytes.
 */

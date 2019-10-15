@@ -22,7 +22,7 @@ void A1simulation()
 	int lambdaA[] = {50, 100, 200, 300, 500, 100, 200, 400, 600, 1000};
 	int lambdaC[] = {50, 100, 200, 300, 500, 50, 100, 200, 300, 500};
 
-
+	printf("%sA1sim%s\n", BRIGHTMAGENTA, NONE);
 	for (int i = 0; i < 10; i++) {
 		A.sendDelayTimes = generatePoissonDelayTimes(lambdaA[i], simulation_time_s, 100000);
 		A.k = 0;
@@ -40,10 +40,11 @@ void A1simulation()
 
 		A1_sim_run(&A, &C);
 		
-		printf("A successes: %d\n", A.totalSuccesses);
-		printf("A collisions: %d\n", A.totalCollisions);
-		printf("C successes: %d\n", C.totalSuccesses);
-		printf("C collisions: %d\n\n", C.totalCollisions);
+		printf("%sA1sim: lambdaA: %d lambdaC: %d %s\n", YELLOW, lambdaA[i], lambdaC[i], NONE);
+		printf("\tA successes: %d\n", A.totalSuccesses);
+		printf("\tA collisions: %d\n", A.totalCollisions);
+		printf("\tC successes: %d\n", C.totalSuccesses);
+		printf("\tC collisions: %d\n\n", C.totalCollisions);
 		
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
