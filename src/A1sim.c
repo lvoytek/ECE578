@@ -87,6 +87,8 @@ void A1_sim_run(node * A, node * C)
 
 			A->backlogFrames++;
 			C->backlogFrames++;
+
+			printf("%d, %d, %d, %d, %d\n", i, A->totalSuccesses, A->totalCollisions, C->totalSuccesses, C->totalCollisions);
 		}
 
 		else
@@ -113,6 +115,7 @@ void A1_sim_run(node * A, node * C)
 				else
 					A->countdown = -1;
 					
+				A->k = 0;
 			}
 
 			//Transmit normally
@@ -124,6 +127,7 @@ void A1_sim_run(node * A, node * C)
 				A->totalSuccesses++;
 				currAback++;
 
+				A->k=0;
 			}
 
 			//Wait for next arrival
@@ -151,6 +155,8 @@ void A1_sim_run(node * A, node * C)
 					C->countdown = DIFS_slots;
 				else
 					C->countdown = -1;
+
+				C->k = 0;
 			}
 
 			//Transmit normally
@@ -161,6 +167,8 @@ void A1_sim_run(node * A, node * C)
 
 				C->totalSuccesses++;
 				currCback++;
+
+				C->k = 0;
 			}
 
 			//Wait for next arrival
