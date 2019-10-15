@@ -39,15 +39,15 @@ void A1simulation()
 		C.countdown = -1;
 
 		A1_sim_run(&A, &C);
-
+		
+		printf("A successes: %d\n", A.totalSuccesses);
+		printf("A collisions: %d\n", A.totalCollisions);
+		printf("C successes: %d\n", C.totalSuccesses);
+		printf("C collisions: %d\n\n", C.totalCollisions);
+		
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
 	}
-
-	printf("A successes: %d\n", A.totalSuccesses);
-	printf("A collisions: %d\n", A.totalCollisions);
-	printf("C successes: %d\n", C.totalSuccesses);
-	printf("C collisions: %d\n", C.totalCollisions);
 }
 
 void A1_sim_run(node * A, node * C)
@@ -88,7 +88,7 @@ void A1_sim_run(node * A, node * C)
 			A->backlogFrames++;
 			C->backlogFrames++;
 
-			printf("%d, %d, %d, %d, %d\n", i, A->totalSuccesses, A->totalCollisions, C->totalSuccesses, C->totalCollisions);
+			//printf("%d, %d, %d, %d, %d\n", i, A->totalSuccesses, A->totalCollisions, C->totalSuccesses, C->totalCollisions);
 		}
 
 		else

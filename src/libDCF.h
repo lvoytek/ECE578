@@ -17,7 +17,7 @@
 #define DIFS_duration_us 40
 #define TransmissionRate_Mbps 12
 #define simulation_time_s 10
-#define total_slots (simulation_time_s * 10000000) / slot_duration_us
+#define total_slots (simulation_time_s * 1000000) / slot_duration_us
 #define DIFS_slots DIFS_duration_us/slot_duration_us
 
 #define FALSE 0
