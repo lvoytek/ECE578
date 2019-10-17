@@ -26,7 +26,7 @@ ${BUILDDIR}/DCFTester:${SRCDIR}/test_libDCF.c
 
 ${BUILDDIR}/A1sim: ${SRCDIR}/A1sim.c ${LIBDIR}/libDCF.so
 	@mkdir -p ${BUILDDIR}
-	$(CC) $(LIBS) $^ -o $@ -lm -lDCF
+	$(CC) $(LIBS) $^ -g -o $@ -lm -lDCF
 
 ${BUILDDIR}/A2sim: ${SRCDIR}/A2sim.c ${LIBDIR}/libDCF.so
 	@mkdir -p ${BUILDDIR}
