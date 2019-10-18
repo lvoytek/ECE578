@@ -2,13 +2,13 @@
 
 int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond)
 {
-	float * delayTimes = (float *) calloc(sizeof(float), lambda*time);
+	float * delayTimes = (float *) calloc(lambda*time, sizeof(float));
 
 	for(int i = 0; i < lambda*time; i++) {
 		delayTimes[i] = -1.0 / lambda * log(1 - (rand()%100 / 100.0));
 	}
 
-	int * delaySlots = (int *) calloc(sizeof(int), lambda*time);
+	int * delaySlots = (int *) calloc(lambda*time, sizeof(int));
 
 	for(int i = 0; i < lambda*time; i++) {
 		delaySlots[i] = delayTimes[i] * slotsPerSecond / time;

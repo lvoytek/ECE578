@@ -39,13 +39,13 @@ void A1simulation()
 		C.countdown = -1;
 
 		A1_sim_run(&A, &C);
-		
+
 		printf("%sA1sim: lambdaA: %d lambdaC: %d %s\n", YELLOW, lambdaA[i], lambdaC[i], NONE);
 		printf("\tA successes: %d\n", A.totalSuccesses);
 		printf("\tA collisions: %d\n", A.totalCollisions);
 		printf("\tC successes: %d\n", C.totalSuccesses);
 		printf("\tC collisions: %d\n\n", C.totalCollisions);
-		
+
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
 	}
@@ -56,14 +56,13 @@ void A1_sim_run(node * A, node * C)
 	slot curr_slot = {FALSE};
 	slot next_slot = {FALSE};
 
-	int *currAback = A->sendDelayTimes;
-	int *currCback = C->sendDelayTimes;
+	int currAback = 0;
+	int currCback = 0;
 
 	int i = 0;
 	while(i < total_slots) {
-
 		//First collision prior to backoffs
-		if (((*currAback == 0) && (*currCback == 0)) || (A->countdown == 0 && C->countdown == 0)) {
+		if (((A->sendDelayTimes[currAback] == 0) && (C->sendDelayTimes[currCback] == 0)) || (A->countdown == 0 && C->countdown == 0)) {
 			i += 1 + NAV;
 
 			int windowMax = pow(2, A->k) * CWo;
@@ -88,8 +87,6 @@ void A1_sim_run(node * A, node * C)
 
 			A->backlogFrames++;
 			C->backlogFrames++;
-
-			//printf("%d, %d, %d, %d, %d\n", i, A->totalSuccesses, A->totalCollisions, C->totalSuccesses, C->totalCollisions);
 		}
 
 		else
@@ -115,12 +112,12 @@ void A1_sim_run(node * A, node * C)
 					A->countdown = DIFS_slots;
 				else
 					A->countdown = -1;
-					
+
 				A->k = 0;
 			}
 
 			//Transmit normally
-			else if (*currAback == 0) {
+			else if (A->sendDelayTimes[currAback] == 0) {
 				startTransmission();
 				i += NAV;
 				i += DIFS_slots;
@@ -131,9 +128,9 @@ void A1_sim_run(node * A, node * C)
 				A->k=0;
 			}
 
-			//Wait for next arrival
-			else {	
-				(*currAback)--;
+			//Wait for next arrivalfree(): invalid next size (normal)
+			else {
+				A->sendDelayTimes[currAback]--;
 			}
 
 			//Backoff countdown decrement
@@ -148,7 +145,7 @@ void A1_sim_run(node * A, node * C)
 				i += DIFS_slots;
 
 				C->totalSuccesses++;
-				currAback++;
+				currCback++;
 
 				C->backlogFrames--;
 
@@ -161,7 +158,7 @@ void A1_sim_run(node * A, node * C)
 			}
 
 			//Transmit normally
-			else if (*currCback == 0){
+			else if (C->sendDelayTimes[currCback] == 0){
 				startTransmission();
 				i += NAV;
 				i += DIFS_slots;
@@ -174,10 +171,9 @@ void A1_sim_run(node * A, node * C)
 
 			//Wait for next arrival
 			else {
-				(*currCback)--;
+				C->sendDelayTimes[currCback]--;
 			}
 		}
-
 		i++;
 	}
 }
