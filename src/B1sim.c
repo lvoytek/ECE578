@@ -26,5 +26,5 @@ void B1simulation()
 	// if collision occurs, stations that collided doubles their 
 	// 		contention window and repeats the backoff process
 	//		after k collisions, backoff value is selected from
-	// 		[0, 2^k*CW_0 - 1]. CW can not exceed CWmax
+	// 		[0, 2^k*CW_0 - 1]. CW can not exceed CWMAX
 }

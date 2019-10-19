@@ -30,14 +30,14 @@ void A1simulation()
 
 	printf("%sA1sim%s\n", BRIGHTMAGENTA, NONE);
 	for (int i = 0; i < 10; i++) {
-		A.sendDelayTimes = generatePoissonDelayTimes(lambdaA[i], simulation_time_s, 100000);
+		A.sendDelayTimes = generatePoissonDelayTimes(lambdaA[i], SIMULATION_TIME_S, 100000);
 		A.k = 0;
 		A.totalCollisions = 0;
 		A.totalSuccesses = 0;
 		A.backlogFrames = 0;
 		A.countdown = -1;
 
-		C.sendDelayTimes = generatePoissonDelayTimes(lambdaC[i], simulation_time_s, 100000);
+		C.sendDelayTimes = generatePoissonDelayTimes(lambdaC[i], SIMULATION_TIME_S, 100000);
 		C.k = 0;
 		C.totalCollisions = 0;
 		C.totalSuccesses = 0;
@@ -104,7 +104,7 @@ void A1_sim_run(node * A, node * C)
 	int currCback = 0;
 
 	int i = 0;
-	while(i < total_slots) {
+	while(i < TOTAL_SLOTS) {
 		//First collision prior to backoffs
 		if (((A->sendDelayTimes[currAback] == 0) && (C->sendDelayTimes[currCback] == 0)) || (A->countdown == 0 && C->countdown == 0)) {
 			i += 1 + NAV;
@@ -112,16 +112,16 @@ void A1_sim_run(node * A, node * C)
 			int windowMax = pow(2, A->k) * CWo;
 			A->countdown = rand()%(windowMax);
 
-			if(windowMax * 2 < CWmax)
+			if(windowMax * 2 < CWMAX)
 				A->k++;
 
 			windowMax = pow(2, C->k) * CWo;
 			C->countdown = rand()%(windowMax);
 
-			if(windowMax * 2 < CWmax)
+			if(windowMax * 2 < CWMAX)
 				C->k++;
 
-			i += DIFS_slots;
+			i += DIFS_SLOTS;
 
 			A->totalCollisions++;
 			C->totalCollisions++;
@@ -144,7 +144,7 @@ void A1_sim_run(node * A, node * C)
 			else if(A->countdown == 0) {
 				startTransmission();
 				i += NAV;
-				i += DIFS_slots;
+				i += DIFS_SLOTS;
 
 				A->totalSuccesses++;
 				currAback++;
@@ -153,7 +153,7 @@ void A1_sim_run(node * A, node * C)
 				A->backlogFrames--;
 
 				if(A->backlogFrames > 0)
-					A->countdown = DIFS_slots;
+					A->countdown = DIFS_SLOTS;
 				else
 					A->countdown = -1;
 
@@ -164,7 +164,7 @@ void A1_sim_run(node * A, node * C)
 			else if (A->sendDelayTimes[currAback] == 0) {
 				startTransmission();
 				i += NAV;
-				i += DIFS_slots;
+				i += DIFS_SLOTS;
 
 				A->totalSuccesses++;
 				currAback++;
@@ -186,7 +186,7 @@ void A1_sim_run(node * A, node * C)
 			else if(C->countdown == 0) {
 				startTransmission();
 				i += NAV;
-				i += DIFS_slots;
+				i += DIFS_SLOTS;
 
 				C->totalSuccesses++;
 				currCback++;
@@ -194,7 +194,7 @@ void A1_sim_run(node * A, node * C)
 				C->backlogFrames--;
 
 				if(C->backlogFrames > 0)
-					C->countdown = DIFS_slots;
+					C->countdown = DIFS_SLOTS;
 				else
 					C->countdown = -1;
 
@@ -205,7 +205,7 @@ void A1_sim_run(node * A, node * C)
 			else if (C->sendDelayTimes[currCback] == 0){
 				startTransmission();
 				i += NAV;
-				i += DIFS_slots;
+				i += DIFS_SLOTS;
 
 				C->totalSuccesses++;
 				currCback++;
