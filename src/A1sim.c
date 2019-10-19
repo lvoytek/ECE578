@@ -7,6 +7,7 @@ void startTransmission();
 void stopTransmission();
 
 int currentlyOccupied = FALSE;
+const char *outputFileName = "A1simout.csv";
 
 
 int main() 
@@ -21,6 +22,11 @@ void A1simulation()
 
 	int lambdaA[] = {50, 100, 200, 300, 500, 100, 200, 400, 600, 1000};
 	int lambdaC[] = {50, 100, 200, 300, 500, 50, 100, 200, 300, 500};
+
+    int Acollisions[10] = {};
+    int Asuccesses[10] = {};
+    int Csuccesses[10] = {};
+    int Ccollisions[10] = {};
 
 	printf("%sA1sim%s\n", BRIGHTMAGENTA, NONE);
 	for (int i = 0; i < 10; i++) {
@@ -40,6 +46,11 @@ void A1simulation()
 
 		A1_sim_run(&A, &C);
 
+        Acollisions[i] = A.totalCollisions;
+        Asuccesses[i] = A.totalSuccesses;
+        Ccollisions[i] = C.totalCollisions;
+        Csuccesses[i] = C.totalSuccesses;
+
 		printf("%sA1sim: lambdaA: %d lambdaC: %d %s\n", YELLOW, lambdaA[i], lambdaC[i], NONE);
 		printf("\tA successes: %d\n", A.totalSuccesses);
 		printf("\tA collisions: %d\n", A.totalCollisions);
@@ -49,6 +60,39 @@ void A1simulation()
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
 	}
+	FILE *file = fopen(outputFileName, "w+");
+	fprintf(file, "lambdaA,");
+	for (int i = 0; i < 10; i++) {
+        fprintf(file,"%d",lambdaA[i]);
+        if (i != 9) fprintf(file, ",");
+    }
+	fprintf(file, "\nlambdaC,");
+    for (int i = 0; i < 10; i++) {
+        fprintf(file,"%d",lambdaC[i]);
+        if (i != 9) fprintf(file, ",");
+    }
+    fprintf(file, "\nAcollisions,");
+    for (int i = 0; i < 10; i++) {
+        fprintf(file,"%d",Acollisions[i]);
+        if (i != 9) fprintf(file, ",");
+    }
+    fprintf(file, "\nAsuccesses,");
+    for (int i = 0; i < 10; i++) {
+        fprintf(file,"%d",Asuccesses[i]);
+        if (i != 9) fprintf(file, ",");
+    }
+    fprintf(file, "\nCcollisions,");
+    for (int i = 0; i < 10; i++) {
+        fprintf(file,"%d",Ccollisions[i]);
+        if (i != 9) fprintf(file, ",");
+    }
+    fprintf(file, "\nCsuccesses,");
+    for (int i = 0; i < 10; i++) {
+        fprintf(file,"%d",Csuccesses[i]);
+        if (i != 9) fprintf(file, ",");
+    }
+    fprintf(file, "\n");
+    fclose(file);
 }
 
 void A1_sim_run(node * A, node * C)
