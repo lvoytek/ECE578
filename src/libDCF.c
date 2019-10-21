@@ -32,3 +32,21 @@ void initializeNode(node * n)
     n->backlogFrames = 0;
     n->countdown = -1;
 }
+
+void sendToCSV(const char * filename, int lambdaA[], int lambdaC[], int successesA[], int successesC[],
+               int collisionsA[], int collisionsC[], float fairnessIndex[])
+{
+    FILE *file = fopen(filename, "w+");
+
+    fprintf(file, "lambda (frames/s),lambdaA (frames/s),lambdaC (frames/s),A Throughput (Kbps),C"
+                  " Throughput(Kbps),A Collisions,C Collisions,Fairness Index\n");
+
+    for(unsigned int i = 0; i < 10; i++) {
+        fprintf(file,"%d,%d,%d,%.1f,%.1f,%d,%d,%f\n", lambdaC[i], lambdaA[i], lambdaC[i],
+                successesA[i] * DATA_FRAME_SIZE_BYTES * 8 /((float) SIMULATION_TIME_S * 1000),
+                successesC[i] * DATA_FRAME_SIZE_BYTES * 8 /((float) SIMULATION_TIME_S * 1000),
+                collisionsA[i], collisionsC[i], fairnessIndex[i]);
+    }
+
+    fclose(file);
+}

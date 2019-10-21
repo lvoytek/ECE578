@@ -98,4 +98,11 @@ int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond);
  */
 void initializeNode(node * n);
 
+/*
+ * Print data from a given simulation to a given file
+ * as a CSV formatted for graphing necessary items
+ */
+void sendToCSV(const char * filename, int lambdaA[], int lambdaC[], int successesA[], int successesC[],
+        int collisionsA[], int collisionsC[], float fairnessIndex[]);
+
 #endif
