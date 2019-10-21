@@ -59,7 +59,7 @@ typedef struct node_t
 	int totalCollisions;
 	int totalSuccesses;
 	int k;
-	int framesOccupied;
+	int slotsOccupied;
 } node;
 
 /*

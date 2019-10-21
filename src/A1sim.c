@@ -30,19 +30,11 @@ void A1simulation()
 
 	printf("%sA1sim%s\n", BRIGHTMAGENTA, NONE);
 	for (int i = 0; i < 10; i++) {
-		A.sendDelayTimes = generatePoissonDelayTimes(lambdaA[i], SIMULATION_TIME_S, 100000);
-		A.k = 0;
-		A.totalCollisions = 0;
-		A.totalSuccesses = 0;
-		A.backlogFrames = 0;
-		A.countdown = -1;
+	    initializeNode(&A);
+		A.sendDelayTimes = generatePoissonDelayTimes(lambdaA[i], SIMULATION_TIME_S, SLOTS_PER_SECOND);
 
-		C.sendDelayTimes = generatePoissonDelayTimes(lambdaC[i], SIMULATION_TIME_S, 100000);
-		C.k = 0;
-		C.totalCollisions = 0;
-		C.totalSuccesses = 0;
-		C.backlogFrames = 0;
-		C.countdown = -1;
+		initializeNode(&C);
+		C.sendDelayTimes = generatePoissonDelayTimes(lambdaC[i], SIMULATION_TIME_S, SLOTS_PER_SECOND);
 
 		A1_sim_run(&A, &C);
 
@@ -57,6 +49,11 @@ void A1simulation()
 		printf("\tC successes: %d\n", C.totalSuccesses);
 		printf("\tC collisions: %d\n\n", C.totalCollisions);
 
+		printf("\tTotal Data Transferred: %d\n", (A.totalSuccesses + C.totalSuccesses) * DATA_FRAME_SIZE_BYTES);
+        printf("\tTotal Collisions: %d\n", A.totalCollisions + C.totalCollisions);
+        printf("\tSlots occupied by A:%d\n", A.slotsOccupied);
+        printf("\tSlots occupied by C:%d\n", C.slotsOccupied);
+        printf("\tFairness index: %f\n\n", ((float)(A.slotsOccupied))/C.slotsOccupied);
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
 	}
@@ -108,6 +105,8 @@ void A1_sim_run(node * A, node * C)
 		//First collision prior to backoffs
 		if (((A->sendDelayTimes[currAback] == 0) && (C->sendDelayTimes[currCback] == 0)) || (A->countdown == 0 && C->countdown == 0)) {
 			i += 1 + NAV;
+			A->slotsOccupied += NAV;
+			C->slotsOccupied += NAV;
 
 			int windowMax = pow(2, A->k) * CWo;
 			A->countdown = rand()%(windowMax);
@@ -145,6 +144,7 @@ void A1_sim_run(node * A, node * C)
 				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
+                A->slotsOccupied += NAV;
 
 				A->totalSuccesses++;
 				currAback++;
@@ -165,6 +165,7 @@ void A1_sim_run(node * A, node * C)
 				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
+                A->slotsOccupied += NAV;
 
 				A->totalSuccesses++;
 				currAback++;
@@ -187,6 +188,7 @@ void A1_sim_run(node * A, node * C)
 				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
+				C->slotsOccupied += NAV;
 
 				C->totalSuccesses++;
 				currCback++;
@@ -206,6 +208,7 @@ void A1_sim_run(node * A, node * C)
 				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
+				C->slotsOccupied += NAV;
 
 				C->totalSuccesses++;
 				currCback++;

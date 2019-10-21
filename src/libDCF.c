@@ -28,7 +28,7 @@ void initializeNode(node * n)
     n->k = 0;
     n->totalCollisions = 0;
     n->totalSuccesses = 0;
-    n->framesOccupied = 0;
+    n->slotsOccupied = 0;
     n->backlogFrames = 0;
     n->countdown = -1;
 }
