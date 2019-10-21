@@ -110,7 +110,6 @@ void A1_sim_run(node * A, node * C)
 
 			//Transmit after backoff
 			else if(A->countdown == 0) {
-				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
                 A->slotsOccupied += NAV;
@@ -131,7 +130,6 @@ void A1_sim_run(node * A, node * C)
 
 			//Transmit normally
 			else if (A->sendDelayTimes[currAback] == 0) {
-				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
                 A->slotsOccupied += NAV;
@@ -154,7 +152,6 @@ void A1_sim_run(node * A, node * C)
 
 			//Transmit after backoff
 			else if(C->countdown == 0) {
-				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
 				C->slotsOccupied += NAV;
@@ -174,7 +171,6 @@ void A1_sim_run(node * A, node * C)
 
 			//Transmit normally
 			else if (C->sendDelayTimes[currCback] == 0){
-				startTransmission();
 				i += NAV;
 				i += DIFS_SLOTS;
 				C->slotsOccupied += NAV;
@@ -192,14 +188,4 @@ void A1_sim_run(node * A, node * C)
 		}
 		i++;
 	}
-}
-
-void startTransmission() 
-{
-	currentlyOccupied = TRUE;
-}
-
-void stopTransmission() 
-{
-	currentlyOccupied = FALSE;
 }
