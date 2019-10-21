@@ -3,19 +3,17 @@
 // Concurrent Communications using CSMA/CA
 void A1simulation();
 void A1_sim_run(node *A, node *C);
-void startTransmission();
-void stopTransmission();
 
-int currentlyOccupied = FALSE;
 const char *outputFileName = "A1simout.csv";
 
 
-int main() 
+int main()
 {
 	A1simulation();
+	return 0;
 }
 
-void A1simulation() 
+void A1simulation()
 {
 	node A;
 	node C;
