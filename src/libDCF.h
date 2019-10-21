@@ -10,6 +10,7 @@
 
 #define DATA_FRAME_SIZE_BYTES 1500
 #define SLOT_DURATION_us 10
+#define SLOTS_PER_SECOND 100000
 #define SIFS_DURATION_us 10
 #define CWMAX 1024
 #define CWo 4
