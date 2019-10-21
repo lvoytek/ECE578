@@ -22,3 +22,13 @@ float slots_from_bytes(int bytes)
 {
 	return (((float)bytes * 8 ) / ((float)TRANSMISSIONRATE_Mbps * (float)SLOT_DURATION_us));
 }
+
+void initializeNode(node * n)
+{
+    n->k = 0;
+    n->totalCollisions = 0;
+    n->totalSuccesses = 0;
+    n->framesOccupied = 0;
+    n->backlogFrames = 0;
+    n->countdown = -1;
+}

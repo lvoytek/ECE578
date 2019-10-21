@@ -58,6 +58,7 @@ typedef struct node_t
 	int totalCollisions;
 	int totalSuccesses;
 	int k;
+	int framesOccupied;
 } node;
 
 /*
@@ -90,5 +91,10 @@ typedef struct collisionDomain_t
 * lambda is in frames/second and time is in seconds
 */
 int * generatePoissonDelayTimes(int lambda, int time, int slotsPerSecond);
+
+/*
+ * Initialize a given node as not having sent anything
+ */
+void initializeNode(node * n);
 
 #endif
