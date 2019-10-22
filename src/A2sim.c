@@ -86,13 +86,13 @@ void A2_sim_run(node * A, node * C)
             int windowMax = pow(2, A->k) * CWo;
             A->countdown = rand()%(windowMax);
 
-            if(windowMax * 2 < CWMAX)
+            if(windowMax < CWMAX)
                 A->k++;
 
             windowMax = pow(2, C->k) * CWo;
             C->countdown = rand()%(windowMax);
 
-            if(windowMax * 2 < CWMAX)
+            if(windowMax < CWMAX)
                 C->k++;
 
             i += DIFS_SLOTS;
