@@ -128,6 +128,8 @@ void  B1_sim_run(node *A, node *C)
 
             //Designated Arrival Time
             else {
+                ATransmitting = FALSE;
+
                 if(ATransmissionFailure == TRUE) {
                     A->totalCollisions++;
                     A->backlogFrames++;
@@ -137,7 +139,7 @@ void  B1_sim_run(node *A, node *C)
                     int windowMax = pow(2, A->k) * CWo;
                     A->countdown = rand()%(windowMax);
 
-                    if(windowMax * 2 < CWMAX)
+                    if(windowMax < CWMAX)
                         A->k++;
                 }
 
@@ -193,22 +195,24 @@ void  B1_sim_run(node *A, node *C)
             if(CTransmissionCounter > 0)
                 CTransmissionCounter--;
 
-                //Designated Arrival Time
+            //Designated Arrival Time
             else {
+                CTransmitting = FALSE;
+
                 if(CTransmissionFailure == TRUE) {
                     C->totalCollisions++;
                     C->backlogFrames++;
 
                     C->slotsOccupied += NAV;
 
-                    int windowMax = pow(2, A->k) * CWo;
+                    int windowMax = pow(2, C->k) * CWo;
                     C->countdown = rand()%(windowMax);
 
-                    if(windowMax * 2 < CWMAX)
+                    if(windowMax < CWMAX)
                         C->k++;
                 }
 
-                    //Epic Win
+                //Epic Win
                 else {
                     C->slotsOccupied += NAV;
                     C->totalSuccesses++;
