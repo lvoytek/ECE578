@@ -72,4 +72,126 @@ void A2_sim_run(node * A, node * C)
 
 	// otherwise, overhearing stations defer from transmission
 	//		for time indicated in NAV vector
+    int currAback = 0;
+    int currCback = 0;
+
+    int i = 0;
+    while(i < TOTAL_SLOTS) {
+        //First collision prior to backoffs
+        if (((A->sendDelayTimes[currAback] == 0) && (C->sendDelayTimes[currCback] == 0)) || (A->countdown == 0 && C->countdown == 0)) {
+            i += 1 + RTS_CTS;
+            A->slotsOccupied += RTS_CTS;
+            C->slotsOccupied += RTS_CTS;
+
+            int windowMax = pow(2, A->k) * CWo;
+            A->countdown = rand()%(windowMax);
+
+            if(windowMax * 2 < CWMAX)
+                A->k++;
+
+            windowMax = pow(2, C->k) * CWo;
+            C->countdown = rand()%(windowMax);
+
+            if(windowMax * 2 < CWMAX)
+                C->k++;
+
+            i += DIFS_SLOTS;
+
+            A->totalCollisions++;
+            C->totalCollisions++;
+
+            currAback++;
+            currCback++;
+
+            A->backlogFrames++;
+            C->backlogFrames++;
+        }
+
+        else
+        {
+            //Backoff countdown decrement
+            if(A->countdown > 0) {
+                A->countdown --;
+            }
+
+            //Transmit after backoff
+            else if(A->countdown == 0) {
+                i += NAV + RTS_CTS;
+                i += DIFS_SLOTS;
+                A->slotsOccupied += NAV + RTS_CTS;
+
+                A->totalSuccesses++;
+                currAback++;
+
+                A->countdown = -1;
+                A->backlogFrames--;
+
+                if(A->backlogFrames > 0)
+                    A->countdown = DIFS_SLOTS;
+                else
+                    A->countdown = -1;
+
+                A->k = 0;
+            }
+
+            //Transmit normally
+            else if (A->sendDelayTimes[currAback] == 0) {
+                i += NAV + RTS_CTS;
+                i += DIFS_SLOTS;
+                A->slotsOccupied += NAV + RTS_CTS;
+
+                A->totalSuccesses++;
+                currAback++;
+
+                A->k=0;
+            }
+
+            //Wait for next arrivalfree(): invalid next size (normal)
+            else {
+                A->sendDelayTimes[currAback]--;
+            }
+
+            //Backoff countdown decrement
+            if(C->countdown > 0) {
+                C->countdown --;
+            }
+
+            //Transmit after backoff
+            else if(C->countdown == 0) {
+                i += NAV + RTS_CTS;
+                i += DIFS_SLOTS;
+                C->slotsOccupied += NAV + RTS_CTS;
+
+                C->totalSuccesses++;
+                currCback++;
+
+                C->backlogFrames--;
+
+                if(C->backlogFrames > 0)
+                    C->countdown = DIFS_SLOTS;
+                else
+                    C->countdown = -1;
+
+                C->k = 0;
+            }
+
+            //Transmit normally
+            else if (C->sendDelayTimes[currCback] == 0){
+                i += NAV + RTS_CTS;
+                i += DIFS_SLOTS;
+                C->slotsOccupied += NAV + RTS_CTS;
+
+                C->totalSuccesses++;
+                currCback++;
+
+                C->k = 0;
+            }
+
+                //Wait for next arrival
+            else {
+                C->sendDelayTimes[currCback]--;
+            }
+        }
+        i++;
+    }
 }
