@@ -37,11 +37,11 @@ void A1simulation()
 
 		A1_sim_run(&A, &C);
 
-        	Acollisions[i] = A.totalCollisions;
-        	Asuccesses[i] = A.totalSuccesses;
-        	Ccollisions[i] = C.totalCollisions;
-        	Csuccesses[i] = C.totalSuccesses;
-        	fairnessIndex[i] = ((float)(A.slotsOccupied))/C.slotsOccupied;
+		Acollisions[i] = A.totalCollisions;
+		Asuccesses[i] = A.totalSuccesses;
+		Ccollisions[i] = C.totalCollisions;
+		Csuccesses[i] = C.totalSuccesses;
+		fairnessIndex[i] = ((float)(A.slotsOccupied))/C.slotsOccupied;
 
 		printf("%sA1sim: lambdaA: %d lambdaC: %d %s\n", YELLOW, lambdaA[i], lambdaC[i], NONE);
 		printf("\tA successes: %d\n", A.totalSuccesses);
@@ -50,10 +50,10 @@ void A1simulation()
 		printf("\tC collisions: %d\n\n", C.totalCollisions);
 
 		printf("\tTotal Data Transferred: %d\n", (A.totalSuccesses + C.totalSuccesses) * DATA_FRAME_SIZE_BYTES);
-        	printf("\tTotal Collisions: %d\n", A.totalCollisions + C.totalCollisions);
-        	printf("\tSlots occupied by A:%d\n", A.slotsOccupied);
-        	printf("\tSlots occupied by C:%d\n", C.slotsOccupied);
-        	printf("\tFairness index: %f\n\n", fairnessIndex[i]);
+			printf("\tTotal Collisions: %d\n", A.totalCollisions + C.totalCollisions);
+			printf("\tSlots occupied by A:%d\n", A.slotsOccupied);
+			printf("\tSlots occupied by C:%d\n", C.slotsOccupied);
+			printf("\tFairness index: %f\n\n", fairnessIndex[i]);
 		free(A.sendDelayTimes);
 		free(C.sendDelayTimes);
 	}
@@ -63,10 +63,7 @@ void A1simulation()
 
 void A1_sim_run(node * A, node * C)
 {
-	slot curr_slot = {FALSE};
-	slot next_slot = {FALSE};
-
-	int currAback = 0;
+    int currAback = 0;
 	int currCback = 0;
 
 	int i = 0;
@@ -112,7 +109,7 @@ void A1_sim_run(node * A, node * C)
 			else if(A->countdown == 0) {
 				i += NAV;
 				i += DIFS_SLOTS;
-                A->slotsOccupied += NAV;
+				A->slotsOccupied += NAV;
 
 				A->totalSuccesses++;
 				currAback++;
@@ -132,7 +129,7 @@ void A1_sim_run(node * A, node * C)
 			else if (A->sendDelayTimes[currAback] == 0) {
 				i += NAV;
 				i += DIFS_SLOTS;
-                A->slotsOccupied += NAV;
+				A->slotsOccupied += NAV;
 
 				A->totalSuccesses++;
 				currAback++;
