@@ -39,6 +39,8 @@ float slots_from_bytes(int bytes);
 		(float)SIFS_DURATION_us/(float)SLOT_DURATION_us + \
 		slots_from_bytes(ACK_RTS_CTS_SIZE_BYTES))
 
+#define RTS_CTS (int)(slots_from_bytes(ACK_RTS_CTS_SIZE_BYTES*2))
+
 
 typedef struct slot_t
 {
