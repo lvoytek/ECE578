@@ -79,8 +79,8 @@ gnuplot <<- EOF
  set title "Fairness Index Versus Rate (λ_A = λ_C)"
  plot "<(sed -n '1,6p' build/A1simout.csv)" using 1:8 with line title "A1", \
       "<(sed -n '1,6p' build/A2simout.csv)" using 1:8 with line title "A2", \
-      "<(sed -n '1,6p' build/B1simout.csv)" using 1:8 with line title "A2", \
-      "<(sed -n '1,6p' build/B2simout.csv)" using 1:8 with line title "A2"
+      "<(sed -n '1,6p' build/B1simout.csv)" using 1:8 with line title "B1", \
+      "<(sed -n '1,6p' build/B2simout.csv)" using 1:8 with line title "B2"
 
  set output "img/3B.png"
  set title "Fairness Index Versus Rate (λ_A = 2λ_C)"
