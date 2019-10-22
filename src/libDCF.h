@@ -27,7 +27,7 @@
 #define YELLOW "\e[1;33m"
 #define NONE "\e[1;0m"
 #define BRIGHTMAGENTA "\e[1;35m"
-
+#define SLINKYBUTT TRUE
 
 /*
 * Generates the amount of slots it takes to transmission x bytes.
