@@ -4,11 +4,12 @@ gnuplot <<- EOF
  set xlabel "Rate λ (frames/sec)"
  set ylabel "Throughput (Kbps)"
  set datafile separator ","
- set term png
+ set term pngcairo dashed
  set key left top
  set grid
  set output "img/1A.png"
  set title "Node A Throughput Versus Rate (λ_A = λ_C)"
+ set for [i=1:8] linetype i dashtype i lw 3
  plot "<(sed -n '1,6p' build/A1simout.csv)" using 1:4 with line title "A1", \
       "<(sed -n '1,6p' build/A2simout.csv)" using 1:4 with line title "A2", \
       "<(sed -n '1,6p' build/B1simout.csv)" using 1:4 with line title "B1", \
