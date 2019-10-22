@@ -72,4 +72,218 @@ void B2_sim_run(node *A, node *C)
 
 	// otherwise, overhearing stations defer from transmission
 	//		for time indicated in NAV vector
+
+    int ATransmissionCounter;
+    int CTransmissionCounter;
+
+    int ATransmitting = FALSE;
+    int CTransmitting = FALSE;
+
+    int ATransmissionIsRTS = TRUE;
+    int CTransmissionIsRTS = TRUE;
+
+    int ATransmissionFailure = FALSE;
+    int CTransmissionFailure = FALSE;
+
+    int currAback = 0;
+    int currCback = 0;
+
+    int i = 0;
+    while(i < TOTAL_SLOTS) {
+
+        //Backoff countdown decrement
+        if(A->countdown > 0) {
+            A->countdown --;
+        }
+
+        //Start transmission
+        else if(A->countdown == 0 || A->sendDelayTimes[currAback] == 0) {
+            ATransmissionCounter = RTS_CTS;
+            ATransmitting = TRUE;
+            ATransmissionFailure = FALSE;
+            ATransmissionIsRTS = TRUE;
+
+            A->countdown = -1;
+            A->sendDelayTimes[currAback]--;
+
+            if(A->backlogFrames > 0)
+                A->backlogFrames--;
+
+            //Collision from earlier C frame
+            if(CTransmitting == TRUE)
+            {
+                ATransmissionFailure = TRUE;
+                CTransmissionFailure = TRUE;
+            }
+        }
+
+        //Wait for ACK
+        else if(ATransmitting == TRUE) {
+
+            if(ATransmissionCounter > 0)
+                ATransmissionCounter--;
+
+            //Designated Arrival Time
+            else {
+                ATransmitting = FALSE;
+
+                //CTS Transmission Arrival
+                if(ATransmissionIsRTS == TRUE) {
+                    A->slotsOccupied += RTS_CTS;
+
+                    if(ATransmissionFailure == TRUE) {
+                        A->totalCollisions++;
+                        A->backlogFrames++;
+
+                        int windowMax = pow(2, A->k) * CWo;
+                        A->countdown = rand()%(windowMax);
+
+                        if(windowMax < CWMAX)
+                            A->k++;
+                    }
+
+                    //Yay now transmit the real data
+                    else {
+                        ATransmissionCounter = NAV;
+                        ATransmitting = TRUE;
+                        ATransmissionFailure = FALSE;
+                        ATransmissionIsRTS = FALSE;
+                    }
+                }
+
+                //Data ACK Arrival
+                else {
+                    A->slotsOccupied += NAV;
+
+                    if(ATransmissionFailure == TRUE) {
+                        A->totalCollisions++;
+                        A->backlogFrames++;
+
+                        int windowMax = pow(2, A->k) * CWo;
+                        A->countdown = rand()%(windowMax);
+
+                        if(windowMax < CWMAX)
+                            A->k++;
+                    }
+
+                    //Epic Win
+                    else {
+                        A->totalSuccesses++;
+                        currAback++;
+
+                        if(A->backlogFrames > 0)
+                            A->countdown = DIFS_SLOTS;
+                        else
+                            A->countdown = -1;
+
+                        A->k = 0;
+                    }
+                }
+            }
+        }
+
+            //Wait for frame to hop on in this town
+        else {
+            A->sendDelayTimes[currAback]--;
+        }
+
+
+        //Backoff countdown decrement
+        if(C->countdown > 0) {
+            C->countdown --;
+        }
+
+        //Start transmission
+        else if(C->countdown == 0 || C->sendDelayTimes[currCback] == 0) {
+            CTransmissionCounter = RTS_CTS;
+            CTransmitting = TRUE;
+            CTransmissionFailure = FALSE;
+            CTransmissionIsRTS = TRUE;
+
+            C->countdown = -1;
+            C->sendDelayTimes[currCback]--;
+
+            if(C->backlogFrames > 0)
+                C->backlogFrames--;
+
+            //Collision from earlier C frame
+            if(ATransmitting == TRUE)
+            {
+                ATransmissionFailure = TRUE;
+                CTransmissionFailure = TRUE;
+            }
+        }
+
+        //Wait for ACK
+        else if(CTransmitting == TRUE) {
+
+            if(CTransmissionCounter > 0)
+                CTransmissionCounter--;
+
+            //Designated Arrival Time
+            else {
+                CTransmitting = FALSE;
+
+                //CTS Transmission Arrival
+                if(CTransmissionIsRTS == TRUE) {
+                    C->slotsOccupied += RTS_CTS;
+
+                    if(CTransmissionFailure == TRUE) {
+                        C->totalCollisions++;
+                        C->backlogFrames++;
+
+                        int windowMax = pow(2, C->k) * CWo;
+                        C->countdown = rand()%(windowMax);
+
+                        if(windowMax < CWMAX)
+                            C->k++;
+                    }
+
+                    //Yay now transmit the real data
+                    else {
+                        CTransmissionCounter = NAV;
+                        CTransmitting = TRUE;
+                        CTransmissionFailure = FALSE;
+                        CTransmissionIsRTS = FALSE;
+                    }
+                }
+
+                //Data ACK Arrival
+                else {
+                    C->slotsOccupied += NAV;
+
+                    if(CTransmissionFailure == TRUE) {
+                        C->totalCollisions++;
+                        C->backlogFrames++;
+
+                        int windowMax = pow(2, C->k) * CWo;
+                        C->countdown = rand()%(windowMax);
+
+                        if(windowMax < CWMAX)
+                            C->k++;
+                    }
+
+                    //Epic Win
+                    else {
+                        C->totalSuccesses++;
+                        currCback++;
+
+                        if(C->backlogFrames > 0)
+                            C->countdown = DIFS_SLOTS;
+                        else
+                            C->countdown = -1;
+
+                        C->k = 0;
+                    }
+                }
+            }
+        }
+
+        //Wait for frame to hop on in this town
+        else {
+            C->sendDelayTimes[currCback]--;
+        }
+
+        i++;
+    }
 }
