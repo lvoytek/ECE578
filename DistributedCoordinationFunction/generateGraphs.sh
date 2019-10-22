@@ -56,14 +56,14 @@ gnuplot <<- EOF
 
 
  set output "img/2C.png"
- set title "Node A Throughput Versus Rate (λ_A = 2λ_C)"
+ set title "Node A Collisions Versus Rate (λ_A = 2λ_C)"
  plot "<(sed -n '7,11p' build/A1simout.csv)" using 1:6 with line title "A1", \
       "<(sed -n '7,11p' build/A2simout.csv)" using 1:6 with line title "A2", \
       "<(sed -n '7,11p' build/B1simout.csv)" using 1:6 with line title "B1", \
       "<(sed -n '7,11p' build/B2simout.csv)" using 1:6 with line title "B2" 
  
  set output "img/2D.png"
- set title "Node C Throughput Versus Rate (λ_A = 2λ_C)"
+ set title "Node C Collisions Versus Rate (λ_A = 2λ_C)"
  plot "<(sed -n '7,11p' build/A1simout.csv)" using 1:7 with line title "A1", \
       "<(sed -n '7,11p' build/A2simout.csv)" using 1:7 with line title "A2", \
       "<(sed -n '7,11p' build/B1simout.csv)" using 1:7 with line title "B1", \
