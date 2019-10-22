@@ -1,0 +1,7 @@
+set title "Node A Throughput Versus Rate λ = λ_A = λ_C"
+set xlabel "Rate λ (frames/sec)"
+set ylabel "Throughput (Kbps)"
+set datafile separator ","
+set term png
+set output "A1Throughput.png"
+plot "<(sed -n '1,6p' build/A1simout.csv)" using 1:4 with line notitle
