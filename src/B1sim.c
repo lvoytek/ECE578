@@ -35,7 +35,7 @@ void B1simulation()
         initializeNode(&C);
         C.sendDelayTimes = generatePoissonDelayTimes(lambdaC[i], SIMULATION_TIME_S, SLOTS_PER_SECOND);
 
-        A2_sim_run(&A, &C);
+        B1_sim_run(&A, &C);
 
         Acollisions[i] = A.totalCollisions;
         Asuccesses[i] = A.totalSuccesses;
@@ -80,4 +80,159 @@ void  B1_sim_run(node *A, node *C)
 	// 		contention window and repeats the backoff process
 	//		after k collisions, backoff value is selected from
 	// 		[0, 2^k*CW_0 - 1]. CW can not exceed CWMAX
+
+	int ATransmissionCounter;
+	int CTransmissionCounter;
+
+	int ATransmitting = FALSE;
+	int CTransmitting = FALSE;
+
+	int ATransmissionFailure = FALSE;
+	int CTransmissionFailure = FALSE;
+
+    int currAback = 0;
+    int currCback = 0;
+
+    int i = 0;
+    while(i < TOTAL_SLOTS) {
+
+        //Backoff countdown decrement
+        if(A->countdown > 0) {
+            A->countdown --;
+        }
+
+        //Start transmission
+        else if(A->countdown == 0 || A->sendDelayTimes[currAback] == 0) {
+            ATransmissionCounter = NAV;
+            ATransmitting = TRUE;
+            ATransmissionFailure = FALSE;
+
+            A->countdown = -1;
+            A->sendDelayTimes[currAback]--;
+
+            if(A->backlogFrames > 0)
+                A->backlogFrames--;
+
+            //Collision from earlier C frame
+            if(CTransmitting == TRUE)
+            {
+                ATransmissionFailure = TRUE;
+                CTransmissionFailure = TRUE;
+            }
+        }
+
+        //Wait for ACK
+        else if(ATransmitting == TRUE) {
+            if(ATransmissionCounter > 0)
+                ATransmissionCounter--;
+
+            //Designated Arrival Time
+            else {
+                ATransmitting = FALSE;
+
+                if(ATransmissionFailure == TRUE) {
+                    A->totalCollisions++;
+                    A->backlogFrames++;
+
+                    A->slotsOccupied += NAV;
+
+                    int windowMax = pow(2, A->k) * CWo;
+                    A->countdown = rand()%(windowMax);
+
+                    if(windowMax < CWMAX)
+                        A->k++;
+                }
+
+                //Epic Win
+                else {
+                    A->slotsOccupied += NAV;
+                    A->totalSuccesses++;
+                    currAback++;
+
+                    if(A->backlogFrames > 0)
+                        A->countdown = DIFS_SLOTS;
+                    else
+                        A->countdown = -1;
+
+                    A->k = 0;
+                }
+            }
+        }
+
+        //Wait for frame to hop on in this town
+        else {
+            A->sendDelayTimes[currAback]--;
+        }
+
+
+        //Backoff countdown decrement
+        if(C->countdown > 0) {
+            C->countdown --;
+        }
+
+        //Start transmission
+        else if(C->countdown == 0 || C->sendDelayTimes[currCback] == 0) {
+            CTransmissionCounter = NAV;
+            CTransmitting = TRUE;
+            CTransmissionFailure = FALSE;
+
+            C->countdown = -1;
+            C->sendDelayTimes[currCback]--;
+
+            if(C->backlogFrames > 0)
+                C->backlogFrames--;
+
+            //Collision from earlier C frame
+            if(ATransmitting == TRUE)
+            {
+                ATransmissionFailure = TRUE;
+                CTransmissionFailure = TRUE;
+            }
+        }
+
+        //Wait for ACK
+        else if(CTransmitting == TRUE) {
+            if(CTransmissionCounter > 0)
+                CTransmissionCounter--;
+
+            //Designated Arrival Time
+            else {
+                CTransmitting = FALSE;
+
+                if(CTransmissionFailure == TRUE) {
+                    C->totalCollisions++;
+                    C->backlogFrames++;
+
+                    C->slotsOccupied += NAV;
+
+                    int windowMax = pow(2, C->k) * CWo;
+                    C->countdown = rand()%(windowMax);
+
+                    if(windowMax < CWMAX)
+                        C->k++;
+                }
+
+                //Epic Win
+                else {
+                    C->slotsOccupied += NAV;
+                    C->totalSuccesses++;
+                    currCback++;
+
+                    if(C->backlogFrames > 0)
+                        C->countdown = DIFS_SLOTS;
+                    else
+                        C->countdown = -1;
+
+                    C->k = 0;
+                }
+            }
+        }
+
+        //Wait for frame to hop on in this town
+        else {
+            C->sendDelayTimes[currCback]--;
+        }
+
+        i++;
+    }
 }
