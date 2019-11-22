@@ -12,7 +12,7 @@ class ASClassification:
 		cfile = open(self._classificationFilename, 'r')
 
 		for line in cfile:
-			if not '#' in line:
+			if '#' not in line:
 				line = line.split('|')
 
 				if 'Content' == line[2].strip():
