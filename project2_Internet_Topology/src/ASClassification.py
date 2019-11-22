@@ -11,6 +11,19 @@ class ASClassification:
 	def run(self):
 		cfile = open(self._classificationFilename, 'r')
 
+		for line in cfile:
+			if not '#' in line:
+				line = line.split('|')
+
+				if 'Content' == line[2].strip():
+					self._contents.append((line[0], line[1]))
+				elif 'Transit/Access' == line[2].strip():
+					self._transits.append((line[0], line[1]))
+				elif 'Enterprise' == line[2].strip():
+					self._enterprises.append((line[0], line[1]))
+
+		cfile.close()
+
 	def show(self):
 		labels = 'Transit ASes', 'Content ASes', 'Enterprise ASes'
 		sizes = [len(self._transits), len(self._contents), len(self._enterprises)]

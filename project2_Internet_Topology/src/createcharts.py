@@ -4,7 +4,7 @@ import ASClassification
 
 
 def main():
-	classification = ASClassification.ASClassification()
+	classification = ASClassification.ASClassification('data/ASClassification.txt')
 	classification.run()
 	classification.show()
 
