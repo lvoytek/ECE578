@@ -8,7 +8,7 @@ def main():
 	classification.run()
 	classification.show()
 
-	topology = ASTopology.ASTopology('data/ASRelationships.txt', 'data/prefix2as.txt', 'data/prefix2as_6.txt')
+	topology = ASTopology.ASTopology('data/ASClassification.txt', 'data/ASRelationships.txt', 'data/prefix2as.txt', 'data/prefix2as_6.txt')
 	topology.run()
 	topology.show()
 

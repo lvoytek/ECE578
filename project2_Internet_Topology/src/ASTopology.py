@@ -2,11 +2,13 @@ import matplotlib.pyplot as plt
 from math import pow as pw
 
 class ASTopologyNode:
+
 	def __init__(self, as_name):
 		self._as_name = as_name
 		self._degree = 1
 		self._customers = []
 		self._ip_prefixes = []
+		self._classification = None
 
 	def add_degree(self):
 		self._degree += 1
@@ -47,19 +49,35 @@ class ASTopologyNode:
 			if prefix[2]:
 				count += pw(2, 128 - prefix[1])
 
-		print(count)
 		return count
+
+	def add_classification(self, classification):
+		self._classification = classification
+
+	def get_classification(self):
+		return self._classification
 
 
 class ASTopology:
 
-	def __init__(self, relationships_filename, prefix2as_ipv4filename, prefix2as_ipv6filename):
+	def __init__(self, classification_filename, relationships_filename, prefix2as_ipv4filename, prefix2as_ipv6filename):
+		self._classification_filename = classification_filename
 		self._relationships_filename = relationships_filename
 		self._prefix2as4filename = prefix2as_ipv4filename
 		self._prefix2as6filename = prefix2as_ipv6filename
 		self._as_data = dict()
 
 	def run(self):
+		classification = open(self._classification_filename, 'r')
+
+		for line in classification:
+			if '#' not in line:
+				line = line.split('|')
+				self._as_data[int(line[0])] = ASTopologyNode(int(line[0]))
+				self._as_data[int(line[0])].add_classification(line[2])
+
+		classification.close()
+
 		relationships = open(self._relationships_filename, 'r')
 
 		for line in relationships:
@@ -120,6 +138,7 @@ class ASTopology:
 		self._show_node_degree()
 		self._show_ip_space_v4()
 		self._show_ip_space_v6()
+		self._show_modified_classification_distribution()
 
 	def _show_node_degree(self):
 		# Show AS node degree distribution
@@ -204,4 +223,25 @@ class ASTopology:
 		plt.xlabel("log(# Assigned IPv6 Addresses)")
 		plt.ylabel("Number of ASes")
 		plt.savefig('output/ip_space_ipv6.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
+		plt.show()
+
+	def _show_modified_classification_distribution(self):
+		bins = [0, 0, 0, 0, 0, 0]
+
+		for item in self._as_data.values():
+			if 'Content' == item.get_classification():
+				bins[0] += 1
+			elif 'Transit/Access' == item.get_classification():
+				bins[2] += 1
+			elif 'Enterprise' == item.get_classification():
+				bins[4] += 1
+
+		labels = 'Content ASes w/ No Customers and 1+ peers', 'Other Content ASes', 'Transit ASes with 1+ customers', 'Other Transit ASes', 'Enterprise ASes without customers or peers', 'Other Enterprise ASes'
+		explode = (0, 0, 0, 0, 0, 0)
+
+		fig1, ax1 = plt.subplots()
+		ax1.pie(bins, explode=explode, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90)
+		ax1.axis('equal')
+		plt.title('AS Classifications by Percentage in Detail')
+		plt.savefig('output/asclassificationdetailed.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
 		plt.show()
