@@ -32,5 +32,6 @@ class ASClassification:
 		fig1, ax1 = plt.subplots()
 		ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90)
 		ax1.axis('equal')
+		plt.title('AS Classifications by Percentage')
 		plt.savefig('output/asclassification.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
 		plt.show()
