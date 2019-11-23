@@ -55,7 +55,6 @@ class ASTopologyNode:
 		self._classification = classification
 
 	def get_classification(self):
-		print(self._classification)
 		return self._classification
 
 
@@ -231,11 +230,20 @@ class ASTopology:
 
 		for item in self._as_data.values():
 			if 'Content' == item.get_classification():
-				bins[0] += 1
+				if item.get_degree() > 0 and item.get_number_of_customers() == 0:
+					bins[0] += 1
+				else:
+					bins[1] += 1
 			elif 'Transit/Access' == item.get_classification():
-				bins[2] += 1
+				if item.get_number_of_customers() > 0:
+					bins[2] += 1
+				else:
+					bins[3] += 1
 			elif 'Enterprise' == item.get_classification():
-				bins[4] += 1
+				if item.get_number_of_customers() == 0 and item.get_degree() == 0:
+					bins[4] += 1
+				else:
+					bins[5] += 1
 
 		labels = 'Content ASes w/ No\nCustomers and 1+ peers', 'Other Content ASes', 'Transit ASes with\n1+ customers', 'Other Transit ASes', 'Enterprise ASes without\ncustomers or peers', 'Other Enterprise ASes'
 		explode = (0, 0, 0, 0, 0, 0)
