@@ -55,6 +55,7 @@ class ASTopologyNode:
 		self._classification = classification
 
 	def get_classification(self):
+		print(self._classification)
 		return self._classification
 
 
@@ -74,7 +75,7 @@ class ASTopology:
 			if '#' not in line:
 				line = line.split('|')
 				self._as_data[int(line[0])] = ASTopologyNode(int(line[0]))
-				self._as_data[int(line[0])].add_classification(line[2])
+				self._as_data[int(line[0])].add_classification(line[2].strip())
 
 		classification.close()
 
@@ -236,7 +237,7 @@ class ASTopology:
 			elif 'Enterprise' == item.get_classification():
 				bins[4] += 1
 
-		labels = 'Content ASes w/ No Customers and 1+ peers', 'Other Content ASes', 'Transit ASes with 1+ customers', 'Other Transit ASes', 'Enterprise ASes without customers or peers', 'Other Enterprise ASes'
+		labels = 'Content ASes w/ No\nCustomers and 1+ peers', 'Other Content ASes', 'Transit ASes with\n1+ customers', 'Other Transit ASes', 'Enterprise ASes without\ncustomers or peers', 'Other Enterprise ASes'
 		explode = (0, 0, 0, 0, 0, 0)
 
 		fig1, ax1 = plt.subplots()
