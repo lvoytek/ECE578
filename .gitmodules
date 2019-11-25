@@ -1,3 +1,6 @@
 [submodule "DistributedCoordinationFunction/DistributedCoordinationFunctionPDF"]
 	path = DistributedCoordinationFunction/Report
 	url = https://github.com/lvoytek/DistributedCoordinationFunctionPDF.git
+[submodule "project2_Internet_Topology/InternetTopologyReport"]
+	path = project2_Internet_Topology/InternetTopologyReport
+	url = https://github.com/lvoytek/InternetTopologyReport.git
