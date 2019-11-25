@@ -29,6 +29,10 @@ class ASClassification:
 		sizes = [len(self._transits), len(self._contents), len(self._enterprises)]
 		explode = (0, 0, 0)
 
+		print("# of Enterprise ASes:" + str(len(self._enterprises)))
+		print("# of Transit ASes:" + str(len(self._transits)))
+		print("# of Content ASes:" + str(len(self._contents)))
+
 		fig1, ax1 = plt.subplots()
 		ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90)
 		ax1.axis('equal')
