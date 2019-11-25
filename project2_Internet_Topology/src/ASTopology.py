@@ -194,11 +194,16 @@ class ASTopology:
 		bin_names = ["<1000", "1000-10K", "10K-100K", "100K-1M", "1M-10M", ">10M"]
 
 		fig1, ax1 = plt.subplots()
-		ax1.bar([0, 1, 2, 3, 4, 5], bins)
+		rects = ax1.bar([0, 1, 2, 3, 4, 5], bins)
 		plt.xticks([0, 1, 2, 3, 4, 5], bin_names)
 		plt.title("AS IP Space Distribution (IPv4)")
 		plt.xlabel("# Assigned IPv4 Addresses")
 		plt.ylabel("Number of ASes")
+
+		for rect in rects:
+			height = rect.get_height()
+			ax1.text(rect.get_x() + rect.get_width() / 2., height + 10, '%d' % int(height), ha='center', va='bottom')
+
 		plt.savefig('output/ip_space_ipv4.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
 		plt.show()
 
@@ -222,11 +227,16 @@ class ASTopology:
 		bin_names = ["0", "0-24", "24-26", "26-28", "28-30", "30+"]
 
 		fig1, ax1 = plt.subplots()
-		ax1.bar([0, 1, 2, 3, 4, 5], bins)
+		rects = ax1.bar([0, 1, 2, 3, 4, 5], bins)
 		plt.xticks([0, 1, 2, 3, 4, 5], bin_names)
 		plt.title("AS IP Space Distribution (IPv6)")
 		plt.xlabel("log(# Assigned IPv6 Addresses)")
 		plt.ylabel("Number of ASes")
+
+		for rect in rects:
+			height = rect.get_height()
+			ax1.text(rect.get_x() + rect.get_width() / 2., height + 10, '%d' % int(height), ha='center', va='bottom')
+
 		plt.savefig('output/ip_space_ipv6.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
 		plt.show()
 
