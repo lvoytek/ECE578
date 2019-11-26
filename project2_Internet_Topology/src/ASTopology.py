@@ -216,6 +216,7 @@ class ASTopology:
 					ASNode.set_org_name(line[2])
 
 		ASorg.close()
+		print("# of T1 ASes", len(self._inferred_T1))
 
 	def show(self):
 		self._show_node_degree()
@@ -235,6 +236,7 @@ class ASTopology:
 		axs.axis('tight')
 		axs.axis('off')
 		axs.table(cellText=clust_data,colLabels=collabel,loc='center')
+		plt.title('inferred T1 ASes')
 
 		plt.savefig('output/inferred_T1.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
 		plt.show()
