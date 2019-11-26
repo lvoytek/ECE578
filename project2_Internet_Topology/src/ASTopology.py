@@ -220,34 +220,6 @@ class ASTopology:
                 else:
                     counter -= 1
 
-        self._inferred_T1 = S
-
-        # use as2orgid index of 0 to get the org_id from aut (aut = ASNode._as_name)
-        as2orgid = open(self._as2orgfilename, 'r')
-        for line in as2orgid:
-            # format: aut|changed|aut_name|org_id|opaque_id|source
-            line = line.split('|')
-
-            line[0] = int(line[0])
-
-            for ASNode in S:
-                if line[0] == ASNode.get_name():
-                    ASNode.set_org_id(line[3])
-
-        as2orgid.close()
-
-        # use org_id to get the name of the AS
-        ASorg = open(self._ASOrganizationsfilename, 'r')
-        for line in ASorg:
-            # format: org_id|changed|name|country|source
-            line = line.split('|')
-
-            for ASNode in S:
-                if line[0] == ASNode.get_org_id():
-                    ASNode.set_org_name(line[2])
-
-        ASorg.close()
-
         l = len(self._as_data.values())
         print("number of ASs:", l)
 
@@ -273,14 +245,64 @@ class ASTopology:
         for ASnode in sorted(self._as_data.values(), key=operator.attrgetter('_cone_ranking'), reverse=True):
             sortedCone.append(ASnode)
 
-        print("Sorted by degree")
+
+        sortedConeB = []
+        for ASnode in sorted(self._as_data.values(), key=operator.attrgetter('_ipv4_outreach'), reverse=True):
+            sortedConeB.append(ASnode)
+
+
+
+        # use as2orgid index of 0 to get the org_id from aut (aut = ASNode._as_name)
+        as2orgid = open(self._as2orgfilename, 'r')
+        for line in as2orgid:
+            # format: aut|changed|aut_name|org_id|opaque_id|source
+            line = line.split('|')
+
+            line[0] = int(line[0])
+
+            for ASNode in S:
+                if line[0] == ASNode.get_name():
+                    ASNode.set_org_id(line[3])
+            for ASNode in sortedCone[0:15]:
+                if line[0] == ASNode.get_name():
+                    ASNode.set_org_id(line[3])
+            for ASNode in sortedConeB[0:15]:
+                if line[0] == ASNode.get_name():
+                    ASNode.set_org_id(line[3])
+
+
+        as2orgid.close()
+
+        # use org_id to get the name of the AS
+        ASorg = open(self._ASOrganizationsfilename, 'r')
+        for line in ASorg:
+            # format: org_id|changed|name|country|source
+            line = line.split('|')
+
+            for ASNode in S:
+                if line[0] == ASNode.get_org_id():
+                    ASNode.set_org_name(line[2])
+            for ASNode in sortedCone[0:15]:
+                if line[0] == ASNode.get_org_id():
+                    ASNode.set_org_name(line[2])
+            for ASNode in sortedConeB[0:15]:
+                if line[0] == ASNode.get_org_id():
+                    ASNode.set_org_name(line[2])
+
+        ASorg.close()
+
+        self._inferred_T1 = S
+
+
 
         ipprefixnum = 0
         for item in self._as_data.values():
             ipprefixnum += item.get_number_of_ipv4_prefixes()
 
+        print("Sorted by degree")
+
         for i in range(15):
-            print(i, sortedCone[i].get_name(), "&",
+            print(i + 1, "&", sortedCone[i].get_name(), "&",
                   sortedCone[i].get_org_name(), "&",
                   sortedCone[i].get_degree(), "&",
                   sortedCone[i].get_cone_ranking(), "&",
@@ -291,23 +313,18 @@ class ASTopology:
                   sortedCone[i].get_ipv4_outreach() / (2**32) * 100, "\\\\")
 
         print()
-
-        sortedCone = []
-        for ASnode in sorted(self._as_data.values(), key=operator.attrgetter('_ipv4_outreach'), reverse=True):
-            sortedCone.append(ASnode)
-
         print("Sorted by # IP")
 
         for i in range(15):
-            print(i, sortedCone[i].get_name(), "&",
-                  sortedCone[i].get_org_name(), "&",
-                  sortedCone[i].get_degree(), "&",
-                  sortedCone[i].get_cone_ranking(), "&",
-                  sortedCone[i].get_total_ip_prefix_outreach(), "&",
-                  sortedCone[i].get_ipv4_outreach(), "&",
-                  sortedCone[i].get_cone_ranking() / l * 100, "&",
-                  sortedCone[i].get_total_ip_prefix_outreach() / ipprefixnum * 100, "&",
-                  sortedCone[i].get_ipv4_outreach() / (2**32) * 100, "\\\\")
+            print(i + 1, "&", sortedCone[i].get_name(), "&",
+                  sortedConeB[i].get_org_name(), "&",
+                  sortedConeB[i].get_degree(), "&",
+                  sortedConeB[i].get_cone_ranking(), "&",
+                  sortedConeB[i].get_total_ip_prefix_outreach(), "&",
+                  sortedConeB[i].get_ipv4_outreach(), "&",
+                  sortedConeB[i].get_cone_ranking() / l * 100, "&",
+                  sortedConeB[i].get_total_ip_prefix_outreach() / ipprefixnum * 100, "&",
+                  sortedConeB[i].get_ipv4_outreach() / (2**32) * 100, "\\\\")
 
     # Print iterations progress
     def print_progress(self, iteration, total, prefix='', suffix='', decimals=1, bar_length=100):
