@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 from math import pow as pw
 
+import operator
+
+
+
 class ASTopologyNode:
 
 	def __init__(self, as_name):
@@ -9,6 +13,9 @@ class ASTopologyNode:
 		self._customers = []
 		self._ip_prefixes = []
 		self._classification = None
+
+	def get_name(self):
+		return self._as_name
 
 	def add_degree(self):
 		self._degree += 1
@@ -60,12 +67,15 @@ class ASTopologyNode:
 
 class ASTopology:
 
-	def __init__(self, classification_filename, relationships_filename, prefix2as_ipv4filename, prefix2as_ipv6filename):
+	def __init__(self, classification_filename, relationships_filename, prefix2as_ipv4filename, prefix2as_ipv6filename, ASOrganizations_filename, as2org_filename):
 		self._classification_filename = classification_filename
 		self._relationships_filename = relationships_filename
 		self._prefix2as4filename = prefix2as_ipv4filename
 		self._prefix2as6filename = prefix2as_ipv6filename
+		self._ASOrganizationsfilename = ASOrganizations_filename
+		self._as2orgfilename = as2org_filename
 		self._as_data = dict()
+
 
 	def run(self):
 		classification = open(self._classification_filename, 'r')
@@ -133,6 +143,34 @@ class ASTopology:
 				self._as_data[line[2]].add_prefix(line[0], line[1], True)
 
 		prefix2as6.close()
+
+		R = []
+		for ASnode in sorted(self._as_data.values(), key=operator.attrgetter('_degree'), reverse=True):
+			R.append(ASnode)
+
+		# put AS1 into S, and remove AS1 from R
+		S = [R[0]]
+		R.pop(0)
+
+		counter = 50
+		for ASnode in R:
+			addtolist = True
+			for cliqueNode in S:
+				if cliqueNode.get_name() not in ASnode.get_customers() and ASnode.get_name() not in cliqueNode.get_customers():
+					addtolist = False
+			if addtolist:
+				S.append(ASnode)
+			else:
+				if counter == 0:
+					break
+				else:
+					counter = counter - 1
+
+		for cliqueNode in S:
+			print(cliqueNode.get_name())
+
+
+
 
 	def show(self):
 		self._show_node_degree()
