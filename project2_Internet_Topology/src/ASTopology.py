@@ -1,15 +1,14 @@
 import matplotlib.pyplot as plt
 from math import pow as pw
-
 import operator
-
 
 
 class ASTopologyNode:
 
 	def __init__(self, as_name):
 		self._as_name = as_name
-		self._degree = 1
+		self._degree = 0
+		self._connections = []
 		self._customers = []
 		self._ip_prefixes = []
 		self._classification = None
@@ -17,7 +16,8 @@ class ASTopologyNode:
 	def get_name(self):
 		return self._as_name
 
-	def add_degree(self):
+	def add_degree(self, connection):
+		self._connections.append(connection)
 		self._degree += 1
 
 	def add_customer(self, customer):
@@ -28,6 +28,9 @@ class ASTopologyNode:
 
 	def get_degree(self):
 		return self._degree
+
+	def get_connections(self):
+		return self._connections
 
 	def get_customers(self):
 		return self._customers
@@ -99,14 +102,16 @@ class ASTopology:
 
 				# Add to node degrees of both items
 				if line[0] in self._as_data:
-					self._as_data[line[0]].add_degree()
+					self._as_data[line[0]].add_degree(line[1])
 				else:
 					self._as_data[line[0]] = ASTopologyNode(line[0])
+					self._as_data[line[0]].add_degree(line[1])
 
 				if line[1] in self._as_data:
-					self._as_data[line[1]].add_degree()
+					self._as_data[line[1]].add_degree(line[0])
 				else:
 					self._as_data[line[1]] = ASTopologyNode(line[0])
+					self._as_data[line[1]].add_degree(line[0])
 
 				# Add customer if applicable
 				if line[2] == -1:
