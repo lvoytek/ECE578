@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from math import pow as pw
+import numpy as np
 import operator
 
 
@@ -12,6 +13,20 @@ class ASTopologyNode:
 		self._customers = []
 		self._ip_prefixes = []
 		self._classification = None
+		self._org_id = 0
+		self._org_name = str()
+
+	def set_org_id(self, id):
+		self._org_id = id
+
+	def get_org_id(self):
+		return self._org_id
+
+	def set_org_name(self, org_name):
+		self._org_name = org_name
+
+	def get_org_name(self):
+		return self._org_name
 
 	def get_name(self):
 		return self._as_name
@@ -78,6 +93,7 @@ class ASTopology:
 		self._ASOrganizationsfilename = ASOrganizations_filename
 		self._as2orgfilename = as2org_filename
 		self._as_data = dict()
+		self._inferred_T1 = []
 
 
 	def run(self):
@@ -157,11 +173,13 @@ class ASTopology:
 		S = [R[0]]
 		R.pop(0)
 
+		# add ASNodes from R into clique iff ASNode in R connects to all ASNodes in clique
+		# ignore first 50 times that ASNode in R does not map to all ASNodes in S
 		counter = 50
 		for ASnode in R:
 			addtolist = True
 			for cliqueNode in S:
-				if cliqueNode.get_name() not in ASnode.get_customers() and ASnode.get_name() not in cliqueNode.get_customers():
+				if cliqueNode.get_name() not in ASnode.get_connections():
 					addtolist = False
 			if addtolist:
 				S.append(ASnode)
@@ -169,19 +187,58 @@ class ASTopology:
 				if counter == 0:
 					break
 				else:
-					counter = counter - 1
+					counter -= 1
 
-		for cliqueNode in S:
-			print(cliqueNode.get_name())
+		self._inferred_T1 = S
 
+		# use as2orgid index of 0 to get the org_id from aut (aut = ASNode._as_name)
+		as2orgid = open(self._as2orgfilename, 'r')
+		for line in as2orgid:
+			# format: aut|changed|aut_name|org_id|opaque_id|source
+			line = line.split('|')
 
+			line[0] = int(line[0])
 
+			for ASNode in S:
+				if line[0] == ASNode.get_name():
+					ASNode.set_org_id(line[3])
+
+		as2orgid.close()
+
+		# use org_id to get the name of the AS
+		ASorg = open(self._ASOrganizationsfilename, 'r')
+		for line in ASorg:
+			# format: org_id|changed|name|country|source
+			line = line.split('|')
+
+			for ASNode in S:
+				if line[0] == ASNode.get_org_id():
+					ASNode.set_org_name(line[2])
+
+		ASorg.close()
 
 	def show(self):
 		self._show_node_degree()
 		self._show_ip_space_v4()
 		self._show_ip_space_v6()
 		self._show_modified_classification_distribution()
+		self._show_inferred_T1()
+
+	def _show_inferred_T1(self):
+		# Show all inferred T1 ASes
+		clust_data = []
+		for i in range(0, 10):
+			clust_data.append([i, self._inferred_T1[i].get_org_name()])
+
+		fig, axs = plt.subplots()
+		collabel = ("index", "AS Name")
+		axs.axis('tight')
+		axs.axis('off')
+		axs.table(cellText=clust_data,colLabels=collabel,loc='center')
+
+		plt.savefig('output/inferred_T1.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
+		plt.show()
+
 
 	def _show_node_degree(self):
 		# Show AS node degree distribution
