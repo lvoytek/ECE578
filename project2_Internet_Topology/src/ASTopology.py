@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from math import pow as pw
-import numpy as np
+import sys
 import operator
 
 
@@ -15,6 +15,27 @@ class ASTopologyNode:
         self._classification = None
         self._org_id = 0
         self._org_name = str()
+        self._cone_ranking = 0
+        self._ipv4_outreach = 0
+        self._ipv4_prefix_outreach = 0
+
+    def set_total_ip_prefix_outreach(self, prefixes):
+        self._ipv4_prefix_outreach = prefixes
+
+    def get_total_ip_prefix_outreach(self):
+        return self._ipv4_prefix_outreach
+
+    def set_cone_ranking(self, rank):
+        self._cone_ranking = rank
+
+    def get_cone_ranking(self):
+        return self._cone_ranking
+
+    def set_ipv4_outreach(self, outreach):
+        self._ipv4_outreach = outreach
+
+    def get_ipv4_outreach(self):
+        return self._ipv4_outreach
 
     def set_org_id(self, id):
         self._org_id = id
@@ -63,6 +84,16 @@ class ASTopologyNode:
         for prefix in self._ip_prefixes:
             if not prefix[2]:
                 count += pw(2, 32 - prefix[1])
+
+        return count
+
+    def get_number_of_ipv4_prefixes(self):
+        count = 0
+
+        # For each prefix entry, the number of owned addresses is 2^(32bits - prefix length)
+        for prefix in self._ip_prefixes:
+            if not prefix[2]:
+                count += 1
 
         return count
 
@@ -216,7 +247,108 @@ class ASTopology:
                     ASNode.set_org_name(line[2])
 
         ASorg.close()
-        print("# of T1 ASes", len(self._inferred_T1))
+
+        l = len(self._as_data.values())
+        print("number of ASs:", l)
+
+        self.print_progress(0, l, prefix='Progress:', suffix='Complete', bar_length=50)
+        index = 0
+        for ASNode in self._as_data.values():
+            backloglist = []
+
+            (sum, ip_prefixes, ipv4outreach) = self._recursive_boi(ASNode, backloglist)
+            ipv4outreach += ASNode.get_number_of_ipv4_addresses()
+            ip_prefixes += len(ASNode.get_ip_prefixes())
+            sum += 1
+
+            ASNode.set_cone_ranking(sum)
+            ASNode.set_total_ip_prefix_outreach(ip_prefixes)
+            ASNode.set_ipv4_outreach(ipv4outreach)
+
+            # print(index, sum)
+            self.print_progress(index + 1, l, prefix='Progress:', suffix='Complete', bar_length=50)
+            index += 1
+
+        sortedCone = []
+        for ASnode in sorted(self._as_data.values(), key=operator.attrgetter('_cone_ranking'), reverse=True):
+            sortedCone.append(ASnode)
+
+        print("Sorted by degree")
+
+        ipprefixnum = 0
+        for item in self._as_data.values():
+            ipprefixnum += item.get_number_of_ipv4_prefixes()
+
+        for i in range(15):
+            print(i, sortedCone[i].get_name(), "&",
+                  sortedCone[i].get_org_name(), "&",
+                  sortedCone[i].get_degree(), "&",
+                  sortedCone[i].get_cone_ranking(), "&",
+                  sortedCone[i].get_total_ip_prefix_outreach(), "&",
+                  sortedCone[i].get_ipv4_outreach(), "&",
+                  sortedCone[i].get_cone_ranking() / l * 100, "&",
+                  sortedCone[i].get_total_ip_prefix_outreach() / ipprefixnum * 100, "&",
+                  sortedCone[i].get_ipv4_outreach() / (2**32) * 100, "\\\\")
+
+        print()
+
+        sortedCone = []
+        for ASnode in sorted(self._as_data.values(), key=operator.attrgetter('_ipv4_outreach'), reverse=True):
+            sortedCone.append(ASnode)
+
+        print("Sorted by # IP")
+
+        for i in range(15):
+            print(i, sortedCone[i].get_name(), "&",
+                  sortedCone[i].get_org_name(), "&",
+                  sortedCone[i].get_degree(), "&",
+                  sortedCone[i].get_cone_ranking(), "&",
+                  sortedCone[i].get_total_ip_prefix_outreach(), "&",
+                  sortedCone[i].get_ipv4_outreach(), "&",
+                  sortedCone[i].get_cone_ranking() / l * 100, "&",
+                  sortedCone[i].get_total_ip_prefix_outreach() / ipprefixnum * 100, "&",
+                  sortedCone[i].get_ipv4_outreach() / (2**32) * 100, "\\\\")
+
+    # Print iterations progress
+    def print_progress(self, iteration, total, prefix='', suffix='', decimals=1, bar_length=100):
+        """
+        Call in a loop to create terminal progress bar
+        @params:
+            iteration   - Required  : current iteration (Int)
+            total       - Required  : total iterations (Int)
+            prefix      - Optional  : prefix string (Str)
+            suffix      - Optional  : suffix string (Str)
+            decimals    - Optional  : positive number of decimals in percent complete (Int)
+            bar_length  - Optional  : character length of bar (Int)
+        """
+        str_format = "{0:." + str(decimals) + "f}"
+        percents = str_format.format(100 * (iteration / float(total)))
+        filled_length = int(round(bar_length * iteration / float(total)))
+        bar = '█' * filled_length + '-' * (bar_length - filled_length)
+
+        sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
+
+        if iteration == total:
+            sys.stdout.write('\n')
+        sys.stdout.flush()
+
+
+    def _recursive_boi(self, ASTopologyNode, backloglist):
+        sum = 0
+        ipout = 0
+        ipprefix = 0
+        for customer in ASTopologyNode.get_customers():
+            if customer not in backloglist:
+                backloglist.append(customer)
+                sum += 1
+                ipout += self._as_data[customer].get_number_of_ipv4_addresses()
+                ipprefix += len(self._as_data[customer].get_ip_prefixes())
+                (tempSum, tempPrefix, tempIP) = self._recursive_boi(self._as_data[customer], backloglist)
+                sum += tempSum
+                ipprefix += tempPrefix
+                ipout += tempIP
+
+        return (sum, ipprefix, ipout)
 
     def show(self):
         self._show_node_degree()
@@ -228,18 +360,25 @@ class ASTopology:
     def _show_inferred_T1(self):
         # Show all inferred T1 ASes
         clust_data = []
+        print("# of T1 ASes", len(self._inferred_T1))
+        print("rank & degree & AS_name \\")
         for i in range(0, 10):
             clust_data.append([i + 1,
                                self._inferred_T1[i].get_degree(),
                                self._inferred_T1[i].get_org_name()])
 
-        fig, axs = plt.subplots()
+            print(i + 1, "&",
+                   self._inferred_T1[i].get_degree(), "&",
+                   self._inferred_T1[i].get_org_name(), "\\\\")
+
+        fig = plt.figure()
+        axs = fig.add_subplot(1,1,1)
         collabel = ("rank", "degree", "AS Name")
-        axs.axis('tight')
-        axs.axis('off')
+        # axs.axis('tight')
+        # axs.axis('off')
         the_table = axs.table(cellText=clust_data,
                   colLabels=collabel,
-                  cellLoc='center',
+                  cellLoc='left',
                   loc='center')
 
         # adjust width of first column
@@ -250,8 +389,8 @@ class ASTopology:
 
         plt.title('inferred T1 ASes')
 
-        plt.savefig('output/inferred_T1.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
-        plt.show()
+        fig.savefig('output/inferred_T1.png', dpi=300, edgecolor='w', format='png', pad_inches=0.1)
+        fig.show()
 
     def _show_node_degree(self):
         # Show AS node degree distribution
